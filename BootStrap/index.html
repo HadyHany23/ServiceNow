@@ -1,115 +1,210 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Start Bootstrap</title>
-    <link rel="stylesheet" href="Lab_3/css/styles.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bootstrap demo</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
+    <style>
+      .icon-list {
+        background-color: rgb(255, 213, 0);
+        color: white;
+        padding: 23px;
+      }
+      .img-wrapper {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .img-wrapper img {
+        display: block;
+        width: 100%;
+      }
+
+      .overlay {
+        position: absolute;
+        inset: 0;
+        background-color: rgba(255, 213, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: 0.4s ease;
+      }
+
+      .img-wrapper:hover .overlay {
+        opacity: 1;
+      }
+    </style>
   </head>
   <body>
-    <!-- Navigation-->
-    <nav class="navbar navbar-expand-lg bg-dark sticky-top">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#"
-          ><img src="Lab_3/assets/img/navbar-logo.svg" height="30px" alt="..."
-        /></a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 text-white">
-            <li class="nav-item">
-              <a class="nav-link text-white" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-white" href="#">Link</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-white">Disabled</a>
-            </li>
-          </ul>
+    <!-- Service Section -->
+    <section>
+      <div class="container">
+        <!-- Title -->
+        <div class="row mt-5">
+          <div class="col-lg-12 text-center">
+            <h2 class="text-uppercase">Services</h2>
+            <p class="text-muted fst-italic">
+              Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+            </p>
+          </div>
+        </div>
+        <!-- Cards -->
+        <div class="row mt-5">
+          <div class="col-lg-4 col-md-4 col-sm-12 text-center">
+            <i
+              class="fa-solid fa-cart-shopping fa-3x icon-list rounded-circle"
+            ></i>
+            <h2 class="fw-bold">E-Commerce</h2>
+            <p class="text-secondary">
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+              Repellat, numquam?
+            </p>
+          </div>
+          <div class="col-lg-4 col-md-4 col-sm-12 text-center">
+            <i
+              class="fa-solid fa-cart-shopping fa-3x icon-list rounded-circle"
+            ></i>
+            <h2 class="fw-bold">E-Commerce</h2>
+            <p class="text-secondary">
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+              Repellat, numquam?
+            </p>
+          </div>
+          <div class="col-lg-4 col-md-4 col-sm-12 text-center">
+            <i
+              class="fa-solid fa-cart-shopping fa-3x icon-list rounded-circle"
+            ></i>
+            <h2 class="fw-bold">E-Commerce</h2>
+            <p class="text-secondary">
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+              Repellat, numquam?
+            </p>
+          </div>
         </div>
       </div>
-    </nav>
-    <!-- End Navigation -->
+    </section>
+    <!-- End Service Section -->
+    <!-- Protfolio Section -->
+    <section>
+      <div class="container-fluid bg-light">
+        <!-- Tiltle -->
+        <div class="row mt-5">
+          <div class="col-lg-12 text-center mt-5 mb-5">
+            <h2 class="text-uppercase">Portfolio</h2>
+            <p class="text-muted fst-italic">
+              Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+            </p>
+          </div>
+        </div>
+        <!-- Cards -->
+        <div class="row p-5">
+          <div class="col-lg-4 col-md-4 col-sm-12 text-center">
+            <div class="card">
+              <div class="img-wrapper">
+                <img
+                  src="Lab_3/assets/img/portfolio/1.jpg"
+                  class="card-img-top"
+                  alt="..."
+                />
 
-    <!-- hero-->
-    <div class="container-fluid p-0 position-relative">
-      <img src="Lab_3/assets/img/header-bg.jpg" class="img-fluid" alt="" />
-      <div
-        class="container position-absolute top-50 start-50 translate-middle text-center text-white"
-      >
-        <h1>Welcome to Our Studio</h1>
-        <p>ITS NICE TO MEET YOU</p>
-        <a href="#services" class="btn btn-primary">TELL ME MORE</a>
+                <div class="overlay">
+                  <i class="fa-solid fa-plus fa-3x text-white"></i>
+                </div>
+              </div>
+
+              <div class="card-body">
+                <h2>Threads</h2>
+                <p class="card-text">Illustration</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 col-sm-12 text-center">
+            <div class="card">
+              <img
+                src="Lab_3/assets/img/portfolio/2.jpg"
+                class="card-img-top"
+                alt="..."
+              />
+              <div class="card-body">
+                <h2>Explore</h2>
+                <p class="card-text">Graphic Design</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 col-sm-12 text-center">
+            <div class="card">
+              <img
+                src="Lab_3/assets/img/portfolio/3.jpg"
+                class="card-img-top"
+                alt="..."
+              />
+              <div class="card-body">
+                <h2>Explore</h2>
+                <p class="card-text">Graphic Design</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- second cards row -->
+        <div class="row p-5">
+          <div class="col-lg-4 col-md-4 col-sm-12 text-center">
+            <div class="card">
+              <img
+                src="Lab_3/assets/img/portfolio/4.jpg"
+                class="card-img-top"
+                alt="..."
+              />
+              <div class="card-body">
+                <h2>Explore</h2>
+                <p class="card-text">Graphic Design</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 col-sm-12 text-center">
+            <div class="card">
+              <img
+                src="Lab_3/assets/img/portfolio/5.jpg"
+                class="card-img-top"
+                alt="..."
+              />
+              <div class="card-body">
+                <h2>Explore</h2>
+                <p class="card-text">Graphic Design</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 col-sm-12 text-center">
+            <div class="card">
+              <img
+                src="Lab_3/assets/img/portfolio/6.jpg"
+                class="card-img-top"
+                alt="..."
+              />
+              <div class="card-body">
+                <h2>Explore</h2>
+                <p class="card-text">Graphic Design</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <!-- End hero -->
-
-    <!-- Service -->
-    <div class="container-fluid text-center">
-      <div class="row mt-5">
-        <div
-          class="col-lg-4 col-md-6 col-sm-12 text-center d-flex flex-column align-items-center p-4"
-        >
-          <div
-            class="bg-warning rounded-circle d-flex justify-content-center align-items-center mb-3"
-            style="width: 60px; height: 60px"
-          >
-            <i class="bi bi-star-fill fs-3 text-dark"
-              ><img src="Lab_3/assets/favicon.ico" alt=""
-            /></i>
-          </div>
-          <h1 class="h3 mb-2">Service Title</h1>
-          <p class="mb-0">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          </p>
-        </div>
-        <div
-          class="col-lg-4 col-md-6 col-sm-12 text-center d-flex flex-column align-items-center p-4"
-        >
-          <div
-            class="bg-warning rounded-circle d-flex justify-content-center align-items-center mb-3"
-            style="width: 60px; height: 60px"
-          >
-            <i class="bi bi-star-fill fs-3 text-dark"
-              ><img src="Lab_3/assets/favicon.ico" alt=""
-            /></i>
-          </div>
-          <h1 class="h3 mb-2">Service Title</h1>
-          <p class="mb-0">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          </p>
-        </div>
-        <div
-          class="col-lg-4 col-md-6 col-sm-12 text-center d-flex flex-column align-items-center p-4"
-        >
-          <div
-            class="bg-warning rounded-circle d-flex justify-content-center align-items-center mb-3"
-            style="width: 60px; height: 60px"
-          >
-            <i class="bi bi-star-fill fs-3 text-dark"
-              ><img src="Lab_3/assets/favicon.ico" alt=""
-            /></i>
-          </div>
-          <h1 class="h3 mb-2">Service Title</h1>
-          <p class="mb-0">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          </p>
-        </div>
-      </div>
-    </div>
-    <!-- End Service -->
-
-    <!-- Scripts -->
-    <script src="Lab_3/js/scripts.js"></script>
+    </section>
+    <!-- End Portfolio Section -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>
