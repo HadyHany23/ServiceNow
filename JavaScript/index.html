@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    "use strict";
+    // let message;
+    // message = 8;
+    // var mess = "Hello";
+    // alert(mess + " " + message);
+    // let status = prompt("How are you?", "Fine");
+    // alert(status);
+    // let isboss = confirm("Are you the boss?");
+    // alert(isboss);
+    // let num = 1.23;
+    // alert(Math.round(num * 100) / 100);
+    // let name = "Hady";
+    // alert(`Hello ${name}!`);
+
+    // Task 1
+    // let user = {};
+    // alert(user);
+    // user.name = "Hady";
+    // alert(user.name);
+    // user.surname = "Harb";
+    // alert(user.surname);
+    // user.name = "pete";
+    // alert(user.name);
+    // delete user.name;
+    // alert(user.name);
+
+    // Task 2
+    // let menu = {
+    //   width: 200,
+    //   height: 300,
+    //   title: "My menu",
+    // };
+    // function muliplyNumeric(obj) {
+    //   for (let key in obj) {
+    //     if (typeof obj[key] === "number") {
+    //       obj[key] *= 2;
+    //     }
+    //   }
+    // }
+    // muliplyNumeric(menu);
+    // alert(menu.width);
+    // alert(menu.height);
+    // alert(menu.title);
+
+    // Task 3
+    // let name = "ilya";
+    // alert(`hello ${1}`);
+    // alert(`hello ${"name"}`);
+    // alert(`hello ${name}`);
+
+    // Task 4
+    // let date = new Date();
+    // alert(date);
+    // alert(date.getHours());
+    // date.setHours(0);
+    // alert(date);
+
+    // Task 5
+    // let answer = prompt("Enter JavaScript official name");
+    // if (answer === "ECMAScript") {
+    //   alert("Right!");
+    // } else {
+    //   alert("Don't know ECMAScript!");
+    // }
+
+    // Official Tasks ###############################
+    // Task 1
+    // let answer = prompt("Enter your role", "Canceled");
+    // if (answer === "Admin") {
+    //   let pass = prompt("Enter your password", "Wrong Password");
+    //   if (pass === "The Master") {
+    //     alert("Welcome!");
+    //   } else {
+    //     alert("Wrong Password!");
+    //   }
+    // } else {
+    //   alert("I don't know you!");
+    // }
+
+    // Task 2
+    // let num = prompt("Enter a number");
+    // do {
+    //   if (num > 100) {
+    //     break;
+    //   } else {
+    //     num = prompt("try again", 0);
+    //   }
+    // } while (num <= 100 && num);
+    // alert("thank you\nYour number is : " + num);
+
+    // Task 3
+    // let n = 20;
+    // for (let i = 2; i <= n; i++) {
+    //   let isPrime = true;
+    //   for (let j = 2; j < i; j++) {
+    //     if (i % j === 0) {
+    //       isPrime = false;
+    //       break;
+    //     }
+    //   }
+    //   if (isPrime) {
+    //     alert(i);
+    //   }
+    // }
+
+    // Student Management System
+    // let students = [];
+
+    // while (true) {
+    //   let name = prompt(
+    //     "Enter student name (or type 'stop' to finish):",
+    //     "stop",
+    //   );
+    //   if (name === null || name.toLowerCase() === "stop") {
+    //     break;
+    //   }
+    //   let ageInput = prompt("Enter age:");
+    //   let age = parseInt(ageInput);
+    //   let grades = [];
+    //   while (true) {
+    //     let gradeInput = prompt(
+    //       "Enter grade (type 'stop' when finished):",
+    //       "stop",
+    //     );
+    //     if (gradeInput === null) {
+    //       alert("You must enter at least 3 grades.");
+    //       continue;
+    //     }
+    //     if (gradeInput.toLowerCase() === "stop") {
+    //       if (grades.length < 3) {
+    //         alert("Student must enter at least 3 grades!");
+    //         continue;
+    //       } else {
+    //         break;
+    //       }
+    //     }
+    //     let grade = parseInt(gradeInput);
+    //     if (!isNaN(grade) && grade <= 100 && grade >= 0) {
+    //       grades.push(grade);
+    //     } else {
+    //       alert("Invalid grade! Must be a number between 0 and 100.");
+    //     }
+    //   }
+    //   students.push({
+    //     name: name,
+    //     age: age,
+    //     grades: grades,
+    //     avg:
+    //       grades.length > 0
+    //         ? grades.reduce((a, b) => a + b, 0) / grades.length
+    //         : 0,
+    //     max: grades.length > 0 ? Math.max(...grades) : 0,
+    //     low: grades.length > 0 ? Math.min(...grades) : 0,
+    //     status:
+    //       grades.length > 0
+    //         ? grades.reduce((a, b) => a + b, 0) / grades.length >= 60
+    //           ? "Passed"
+    //           : "Failed"
+    //         : "No Grades",
+    //     totalGrades: grades.length,
+    //   });
+    // }
+
+    // function getGradeLevel(grade) {
+    //   if (grade >= 90) return "Excellent";
+    //   else if (grade >= 80) return "Very Good";
+    //   else if (grade >= 70) return "Good";
+    //   else if (grade >= 60) return "Pass";
+    //   else return "Failed";
+    // }
+
+    // let report = "===== STUDENTS REPORT =====\n";
+    // for (let i = 0; i < students.length; i++) {
+    //   report += "Name: " + students[i].name + "\n";
+    //   report += "Age: " + students[i].age + "\n";
+    //   let formattedGrades = students[i].grades
+    //     .map((g) => g + " (" + getGradeLevel(g) + ")")
+    //     .join(",\n ");
+    //   report += "Grades: \n" + formattedGrades + "\n";
+    //   report += "Age: " + students[i].age + "\n";
+    //   report += "Average Grade: " + students[i].avg.toFixed(2) + "\n";
+    //   report += "Max Grade:" + students[i].max + "\n";
+    //   report += "Min Grade:" + students[i].low + "\n";
+    //   report += "Status:" + students[i].status + "\n";
+    //   report += "Total Grades:" + students[i].totalGrades + "\n";
+    //   report += "-------------------------\n";
+    // }
+    // alert(report);
+
+    // Task 5
+    function pow(x, n) {
+      return x ** n;
+    }
+    alert(pow(3, 3));
+  </script>
+</html>
