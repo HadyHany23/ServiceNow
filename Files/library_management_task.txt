@@ -1,0 +1,73 @@
+Task: Library Management System (Using Functions)
+
+Task Description Create a Library Management System using JavaScript
+that allows the user to manage books using functions.
+
+The system should allow the user to: - Add books - Borrow books - Return
+books - Display library report
+
+Main Requirements
+
+1)  Create Book Structure Each book should contain:
+
+-   Book Title
+-   Author Name
+-   Available Copies
+-   Borrowed Copies
+
+Store books inside an array of objects.
+
+2)  Create Main Menu Show menu using prompt:
+
+1 → Add New Book 2 → Borrow Book 3 → Return Book 4 → Show Library Report
+5 → Exit
+
+The system should continue running until user chooses Exit. Use loop +
+switch case.
+
+Required Functions
+
+Function 1 — Add Book Create function addBook()
+
+Behavior: - Ask user for: - Book title - Author name - Number of copies
+
+Validation: - Copies must be number > 0 - Book title cannot be empty
+
+Store book inside library array.
+
+Function 2 — Borrow Book Create function borrowBook()
+
+Behavior: - Ask user for book title - Search inside library array
+
+Rules: - If book not found → show error - If no available copies → show
+message - Otherwise: - Decrease available copies - Increase borrowed
+copies
+
+Function 3 — Return Book Create function returnBook()
+
+Behavior: - Ask for book title - If borrowed copies > 0: - Increase
+available copies - Decrease borrowed copies
+
+Function 4 — Calculate Total Books Create function calculateTotalBooks()
+
+Return: - Total available copies in library - Total borrowed copies
+
+Function 5 — Show Library Report Create function showReport()
+
+Display using alert or console: - All books - Author name - Available
+copies - Borrowed copies - Total available books - Total borrowed books
+
+Bonus 1 — Prevent Duplicate Books If user tries to add book with same
+title: - Increase copies instead of adding new object
+
+Bonus 2 — Case Insensitive Search User can search with any case and it
+should match the same book.
+
+Bonus 3 — Book Status Add classification: - Available → Copies > 2 -
+Limited → Copies between 1 and 2 - Out of Stock → 0 copies
+
+Bonus 4 — Confirmation Messages Show friendly messages like: - Book
+borrowed successfully - Book returned successfully
+
+Bonus 5 — Store Borrow History Add inside book object: - borrowCount
+Increase every time book borrowed.
