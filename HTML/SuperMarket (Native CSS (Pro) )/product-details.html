@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- NavBar -->
+    <header>
+      <nav class="navbar">
+        <div class="logo">
+          <h2>FreshMarket</h2>
+        </div>
+
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="offers.html">Offers</a></li>
+          <li><a href="cart.html">Cart</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Details -->
+
+    <section class="product-details-page">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a> &gt;
+        <a href="products.html">Products</a> &gt;
+        <span>Fresh Apples</span>
+      </div>
+
+      <div class="product-details-container">
+        <div class="product-image">
+          <img src="imgs/bakery.jpg" alt="Fresh Apples" />
+        </div>
+
+        <div class="product-info">
+          <h1>Fresh Apples</h1>
+          <span class="badge sale">Sale</span>
+          <p class="price">$5.00</p>
+          <p class="description">
+            Delicious, fresh apples picked from local farms. Perfect for
+            snacking or baking.
+          </p>
+
+          <label for="quantity">Quantity:</label>
+          <input
+            type="number"
+            id="quantity"
+            name="quantity"
+            value="1"
+            min="1" />
+
+          <button class="btn"><a href="cart.html">Add to Cart</a></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>© 2026 FreshMarket. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
