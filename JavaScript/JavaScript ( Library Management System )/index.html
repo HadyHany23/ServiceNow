@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    // LIBRARY MANAGEMENT SYSTEM
+    let library = [];
+
+    function addBook() {
+      let title = prompt("Enter Book Title:");
+      if (!title || title.trim() === "") {
+        alert("Book title cannot be empty.");
+        return;
+      }
+
+      let author = prompt("Enter Author Name:");
+      if (!author || author.trim() === "") {
+        alert("Author name cannot be empty.");
+        return;
+      }
+
+      let copies = prompt("Enter Number of Copies:");
+      copies = Number(copies);
+      if (isNaN(copies) || copies <= 0) {
+        alert("Copies must be a number greater than 0.");
+        return;
+      }
+
+      let book = {
+        title: title.trim(),
+        author: author.trim(),
+        availableCopies: copies,
+        borrowedCopies: 0,
+      };
+
+      library.push(book);
+      alert("Book added successfully!");
+    }
+
+    function borrowBook() {
+      alert("Borrow Book function will be implemented next.");
+    }
+
+    function returnBook() {
+      alert("Return Book function will be implemented next.");
+    }
+
+    function showReport() {
+      if (library.length === 0) {
+        alert("Library is empty. No books available.");
+        return;
+      }
+
+      console.log("====== Library Report ======");
+
+      for (let i = 0; i < library.length; i++) {
+        let book = library[i];
+
+        console.log(
+          "Book " +
+            (i + 1) +
+            ":\n" +
+            "Title: " +
+            book.title +
+            "\n" +
+            "Author: " +
+            book.author +
+            "\n" +
+            "Available Copies: " +
+            book.availableCopies +
+            "\n" +
+            "-----------------------------",
+        );
+      }
+
+      alert("Library report printed in console.");
+    }
+
+    let menuechoice;
+
+    do {
+      menuechoice = prompt(
+        "Library Management System\n" +
+          "1 → Add New Book\n" +
+          "2 → Borrow Book\n" +
+          "3 → Return Book\n" +
+          "4 → Show Library Report\n" +
+          "5 → Exit\n" +
+          "Enter your choice no:",
+      );
+      switch (menuechoice) {
+        case "1":
+          addBook();
+          break;
+        case "2":
+          borrowBook();
+          break;
+        case "3":
+          returnBook();
+          break;
+        case "4":
+          showReport();
+          break;
+        case "5":
+          alert("Exiting Library System. Goodbye!");
+          break;
+        default:
+          alert("Invalid choice. Please try again.");
+      }
+    } while (menuechoice !== "5");
+  </script>
+</html>
