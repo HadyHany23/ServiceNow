@@ -42,11 +42,69 @@
     }
 
     function borrowBook() {
-      alert("Borrow Book function will be implemented next.");
+      if (library.length === 0) {
+        alert("Library is empty. No books available.");
+        return;
+      }
+
+      let booktitle = prompt("Enter book title:");
+      if (!booktitle || booktitle.trim() === "") {
+        alert("Book title cannot be empty.");
+        return;
+      }
+
+      let found = false;
+      for (let i = 0; i < library.length; i++) {
+        let book = library[i];
+        if (booktitle.trim() === book.title) {
+          found = true;
+          if (book.availableCopies > 0) {
+            book.availableCopies--;
+            book.borrowedCopies++;
+            alert("Book borrowed successfully!");
+          } else {
+            alert("No available copies to borrow.");
+          }
+          break;
+        }
+      }
+
+      if (!found) {
+        alert("Book not found in library.");
+      }
     }
 
     function returnBook() {
-      alert("Return Book function will be implemented next.");
+      if (library.length === 0) {
+        alert("Library is empty.");
+        return;
+      }
+
+      let booktitle = prompt("Enter book title to return:");
+      if (!booktitle || booktitle.trim() === "") {
+        alert("Book title cannot be empty.");
+        return;
+      }
+
+      let found = false;
+      for (let i = 0; i < library.length; i++) {
+        let book = library[i];
+        if (booktitle.trim() === book.title) {
+          found = true;
+          if (book.borrowedCopies > 0) {
+            book.borrowedCopies--;
+            book.availableCopies++;
+            alert("Book returned successfully!");
+          } else {
+            alert("No borrowed copies to return.");
+          }
+          break;
+        }
+      }
+
+      if (!found) {
+        alert("Book not found in library.");
+      }
     }
 
     function showReport() {
@@ -72,6 +130,9 @@
             "\n" +
             "Available Copies: " +
             book.availableCopies +
+            "\n" +
+            "Borrowed Copies: " +
+            book.borrowedCopies +
             "\n" +
             "-----------------------------",
         );
