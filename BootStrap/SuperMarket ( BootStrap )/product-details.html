@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FreshMarket</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet" />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <header>
+      <nav class="navbar navbar-expand-lg shadow-sm">
+        <div class="container">
+          <a class="navbar-brand text-white fw-bold text-success" href="#"
+            >FreshMarket</a
+          >
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link active" href="index.html">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="products.html">Products</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="gallery.html">Gallery</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="offers.html">Offers</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="cart.html">Cart</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="contact.html">Contact</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="about.html">About</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Product-details -->
+    <section class="product-details-page py-5">
+      <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="index.html" class="text-success">Home</a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="products.html" class="text-success">Products</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Fresh Apples
+            </li>
+          </ol>
+        </nav>
+
+        <div class="row g-4 align-items-center">
+          <div class="col-md-6">
+            <img
+              src="imgs/bakery.jpg"
+              class="img-fluid rounded"
+              style="height: 400px; object-fit: cover"
+              alt="Fresh Apples" />
+          </div>
+
+          <div class="col-md-6">
+            <h1>Fresh Apples</h1>
+            <span class="badge bg-danger mb-3">Sale</span>
+            <p class="h4 text-success fw-bold">$5.00</p>
+            <p class="mb-4">
+              Delicious, fresh apples picked from local farms. Perfect for
+              snacking or baking.
+            </p>
+
+            <div class="mb-3">
+              <label for="quantity" class="form-label fw-bold">Quantity:</label>
+              <input
+                type="number"
+                class="form-control w-25"
+                id="quantity"
+                name="quantity"
+                value="1"
+                min="1" />
+            </div>
+
+            <a href="cart.html" class="btn btn-success btn-lg">Add to Cart</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-3 mt-auto">
+      <div class="container text-center">
+        <p class="mb-0">© 2026 FreshMarket. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

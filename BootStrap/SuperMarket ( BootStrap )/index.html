@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FreshMarket</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet" />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <header>
+      <nav class="navbar navbar-expand-lg shadow-sm">
+        <div class="container">
+          <a class="navbar-brand text-white fw-bold text-success" href="#"
+            >FreshMarket</a
+          >
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link text-white active" href="index.html">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="products.html">Products</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="gallery.html">Gallery</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="offers.html">Offers</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="cart.html">Cart</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="contact.html">Contact</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="about.html">About</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero py-5">
+      <div class="container text-center">
+        <h1 class="display-4 fw-bold">
+          Fresh Groceries Delivered To Your Door
+        </h1>
+        <p class="lead mb-4">
+          Shop the best quality products at affordable prices.
+        </p>
+        <a href="products.html" class="btn btn-success btn-lg">Shop Now</a>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories py-5">
+      <div class="container">
+        <h2 class="text-center mb-4">Shop By Categories</h2>
+        <div class="row g-4 justify-content-center">
+          <div class="col-sm-6 col-md-4">
+            <div class="card h-100 text-center">
+              <img
+                src="imgs/bakery.jpg"
+                class="card-img-top"
+                alt="Bakery"
+                style="height: 250px; object-fit: cover" />
+              <div class="card-body">
+                <h5 class="card-title">Bakery</h5>
+                <a href="products.html" class="btn btn-outline-success"
+                  >View Details</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6 col-md-4">
+            <div class="card h-100 text-center">
+              <img
+                src="imgs/fruits.jpg"
+                class="card-img-top"
+                alt="Fruits"
+                style="height: 250px; object-fit: cover" />
+              <div class="card-body">
+                <h5 class="card-title">Fruits</h5>
+                <a href="products.html" class="btn btn-outline-success"
+                  >View Details</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6 col-md-4">
+            <div class="card h-100 text-center">
+              <img
+                src="imgs/eggs.jpg"
+                class="card-img-top"
+                alt="Dairy"
+                style="height: 250px; object-fit: cover" />
+              <div class="card-body">
+                <h5 class="card-title">Dairy</h5>
+                <a href="products.html" class="btn btn-outline-success"
+                  >View Details</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-3 mt-auto">
+      <div class="container text-center">
+        <p class="mb-0">© 2026 FreshMarket. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
