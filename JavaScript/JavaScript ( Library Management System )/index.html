@@ -30,15 +30,27 @@
         return;
       }
 
+      for (let i = 0; i < library.length; i++) {
+        if (
+          library[i].title.toLowerCase() === title.trim().toLowerCase() &&
+          library[i].author.toLowerCase() === author.trim().toLowerCase()
+        ) {
+          library[i].availableCopies += copies;
+          alert("Book already exists. Copies updated successfully!");
+          return;
+        }
+      }
+
       let book = {
         title: title.trim(),
         author: author.trim(),
         availableCopies: copies,
         borrowedCopies: 0,
+        borrowCount: 0,
       };
 
       library.push(book);
-      alert("Book added successfully!");
+      alert("New book added successfully!");
     }
 
     function borrowBook() {
@@ -56,11 +68,12 @@
       let found = false;
       for (let i = 0; i < library.length; i++) {
         let book = library[i];
-        if (booktitle.trim() === book.title) {
+        if (booktitle.trim().toLowerCase() === book.title.toLowerCase()) {
           found = true;
           if (book.availableCopies > 0) {
             book.availableCopies--;
             book.borrowedCopies++;
+            book.borrowCount++;
             alert("Book borrowed successfully!");
           } else {
             alert("No available copies to borrow.");
@@ -89,7 +102,7 @@
       let found = false;
       for (let i = 0; i < library.length; i++) {
         let book = library[i];
-        if (booktitle.trim() === book.title) {
+        if (booktitle.trim().toLowerCase() === book.title.toLowerCase()) {
           found = true;
           if (book.borrowedCopies > 0) {
             book.borrowedCopies--;
@@ -113,27 +126,39 @@
         return;
       }
 
-      console.log("=================================");
-      console.log("          LIBRARY REPORT         ");
-      console.log("=================================");
+      let reportData = [];
 
       for (let i = 0; i < library.length; i++) {
         let book = library[i];
 
-        console.log("Book " + (i + 1));
-        console.log("Title: " + book.title);
-        console.log("Author: " + book.author);
-        console.log("Available Copies: " + book.availableCopies);
-        console.log("Borrowed Copies: " + book.borrowedCopies);
-        console.log("---------------------------------");
+        let status;
+
+        if (book.availableCopies > 2) {
+          status = "Available";
+        } else if (book.availableCopies >= 1) {
+          status = "Limited";
+        } else {
+          status = "Out of Stock";
+        }
+
+        reportData.push({
+          Title: book.title,
+          Author: book.author,
+          Available: book.availableCopies,
+          Borrowed: book.borrowedCopies,
+          BorrowedTimes: book.borrowCount,
+          Status: status,
+        });
       }
+
+      console.log("LIBRARY REPORT");
+      console.table(reportData);
 
       let totals = calculateTotalBooks();
 
       console.log("TOTAL SUMMARY");
-      console.log("Total Available Copies: " + totals.totalAvailable);
-      console.log("Total Borrowed Copies: " + totals.totalBorrowed);
-      console.log("=================================");
+      console.log("Total Available Copies:", totals.totalAvailable);
+      console.log("Total Borrowed Copies:", totals.totalBorrowed);
     }
 
     function calculateTotalBooks() {
