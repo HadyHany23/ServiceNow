@@ -109,36 +109,46 @@
 
     function showReport() {
       if (library.length === 0) {
-        alert("Library is empty. No books available.");
+        console.log("Library is empty.");
         return;
       }
 
-      console.log("====== Library Report ======");
+      console.log("=================================");
+      console.log("          LIBRARY REPORT         ");
+      console.log("=================================");
 
       for (let i = 0; i < library.length; i++) {
         let book = library[i];
 
-        console.log(
-          "Book " +
-            (i + 1) +
-            ":\n" +
-            "Title: " +
-            book.title +
-            "\n" +
-            "Author: " +
-            book.author +
-            "\n" +
-            "Available Copies: " +
-            book.availableCopies +
-            "\n" +
-            "Borrowed Copies: " +
-            book.borrowedCopies +
-            "\n" +
-            "-----------------------------",
-        );
+        console.log("Book " + (i + 1));
+        console.log("Title: " + book.title);
+        console.log("Author: " + book.author);
+        console.log("Available Copies: " + book.availableCopies);
+        console.log("Borrowed Copies: " + book.borrowedCopies);
+        console.log("---------------------------------");
       }
 
-      alert("Library report printed in console.");
+      let totals = calculateTotalBooks();
+
+      console.log("TOTAL SUMMARY");
+      console.log("Total Available Copies: " + totals.totalAvailable);
+      console.log("Total Borrowed Copies: " + totals.totalBorrowed);
+      console.log("=================================");
+    }
+
+    function calculateTotalBooks() {
+      let totalAvailable = 0;
+      let totalBorrowed = 0;
+
+      for (let i = 0; i < library.length; i++) {
+        totalAvailable += library[i].availableCopies;
+        totalBorrowed += library[i].borrowedCopies;
+      }
+
+      return {
+        totalAvailable: totalAvailable,
+        totalBorrowed: totalBorrowed,
+      };
     }
 
     let menuechoice;
@@ -168,6 +178,7 @@
           break;
         case "5":
           alert("Exiting Library System. Goodbye!");
+          showReport();
           break;
         default:
           alert("Invalid choice. Please try again.");
