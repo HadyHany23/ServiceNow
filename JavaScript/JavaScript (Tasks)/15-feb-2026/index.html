@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>ServiceNow</title>
   </head>
   <body>
-    <!-- Task 6 Tod do list -->
+    <!-- Task 1 Tod do list -->
     <!-- <h1>Task List</h1>
     <input type="text" id="task-input" value="value" />
     <button id="btn">Add task</button>
@@ -14,7 +14,7 @@
     <ul id="task-list"></ul> -->
   </body>
   <script>
-    // Task 6 To do list
+    // Task 1 To do list
     // let input = document.getElementById("task-input");
     // input.setAttribute("placeholder", "Enter Task");
 
@@ -44,20 +44,36 @@
     //     "Total Tasks: " + elements;
     // }
 
-    // Task 7 Password
-    function password(b) {
-      try {
-        if (b.length < 8) {
-          throw new Error("Password must be at least 8 characters long!");
-        }
-        alert("Password is valid!");
-      } catch (error) {
-        console.error("An error occurred: " + error.message);
-      } finally {
-        console.log("Password validation attempt complete.");
-      }
+    // Task 2 Password
+    // function password(b) {
+    //   try {
+    //     if (b.length < 8) {
+    //       throw new Error("Password must be at least 8 characters long!");
+    //     }
+    //     alert("Password is valid!");
+    //   } catch (error) {
+    //     console.error("An error occurred: " + error.message);
+    //   } finally {
+    //     console.log("Password validation attempt complete.");
+    //   }
+    // }
+    // let pass = prompt("Enter your password:");
+    // password(pass);
+
+    // Task 3
+    function message(message) {
+      return {
+        update: function (update) {
+          console.log("Updated message: " + update);
+        },
+        read: function () {
+          console.log("Read message: ", message);
+        },
+      };
     }
-    let pass = prompt("Enter your password:");
-    password(pass);
+
+    const user = message("Hello this is a message!");
+    user.read();
+    user.update("New");
   </script>
 </html>
