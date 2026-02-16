@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Fake Weather App</title>
+  </head>
+  <body>
+    <h2>Weather App</h2>
+    <!-- Task 1 -->
+    <!-- <input type="text" id="cityInput" placeholder="Enter city name" /> -->
+    <!-- <p id="result"></p> -->
+
+    <!-- Task 2 -->
+    <select id="cityInput" style="padding: 5px">
+      <option value="paris">paris</option>
+      <option value="cairo">cairo</option>
+      <option value="london">london</option>
+    </select>
+    <button onclick="getWeather()" style="padding: 5px; background-color: red">
+      Get Weather
+    </button>
+    <p id="result"></p>
+
+    <script>
+      // Task 1 (Input functions)
+      // function fakeWeather(city) {
+      //   return new Promise((resolve, reject) => {
+      //     setTimeout(() => {
+      //       if (city === "paris") {
+      //         resolve("Weather in Paris is 18°C and sunny!");
+      //       } else {
+      //         reject("City not found!");
+      //       }
+      //     }, 2000);
+      //   });
+      // }
+
+      // async function getWeather() {
+      //   const city = document.getElementById("cityInput").value;
+      //   const result = document.getElementById("result");
+
+      //   result.textContent = "Loading... ";
+
+      //   try {
+      //     const weather = await fakeWeather(city);
+      //     result.textContent = weather;
+      //   } catch (error) {
+      //     result.textContent = error;
+      //   }
+      // }
+
+      // Task 2 (Drop Down)
+      function fakeWeather(city) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            if (city === "paris") {
+              resolve("Weather in Paris is -8°C and sunny! 🥶");
+            } else if (city === "cairo") {
+              resolve("Weather in cairo is 38°C and sunny! 🥵");
+            } else if (city === "london") {
+              resolve("Weather in london is 28°C and sunny!");
+            } else {
+              reject("City not found!");
+            }
+          }, 2000);
+        });
+      }
+
+      async function getWeather() {
+        const city = document.getElementById("cityInput").value;
+        const result = document.getElementById("result");
+
+        result.textContent = "Loading... ";
+
+        try {
+          const weather = await fakeWeather(city);
+          result.textContent = weather;
+        } catch (error) {
+          result.textContent = error;
+        }
+      }
+    </script>
+  </body>
+</html>
