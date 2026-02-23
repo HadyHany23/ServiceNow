@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+<html>
+<body>
+<h1>Hello</h1>
+</body>
+</html>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+<j:set var="jvar_age" value="16">
+</j:set>
+
+<j:if test="${jvar_age lt 18}">
+<p>sorry</p>
+</j:if>
+
+<j:if test="${jvar_age ge 18}">
+<p>done</p>
+</j:if>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:set var="jvar_name" value="hady">
+</j:set>
+    <j:choose>
+        <j:when test="${jvar_name eq 'aly'}">
+            <p>welcome aly</p>
+        </j:when>
+        <j:when test="${jvar_name eq 'ahmed'}">
+            <p>welcome ahmed</p>
+        </j:when>
+        <j:otherwise >
+            <p>Welcome ${jvar_name}</p>
+        </j:otherwise>
+    </j:choose>
+</j:jelly>

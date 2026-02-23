@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:set var="arr" value="hady,aly,omar">
+</j:set>
+    <j:forEach var="arr_item" items="${arr}">
+        <p>${arr_item}</p>
+    </j:forEach>
+</j:jelly>
