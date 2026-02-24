@@ -269,3 +269,76 @@ mvn exec:java -Dexec.mainClass=org.apache.commons.jelly.Jelly -Dexec.args="varia
         Timestamp: ${timestamp}
 </j:jelly>
 <!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Create a Date object (current date/time) -->
+    <j:new className="java.util.Date" var="now"/>
+        Current date/time: ${now}
+    <br/>
+    <!-- Get timestamp in milliseconds -->
+    <!-- <j:invoke on="${now}" method="getTime" var="timestamp"/>
+        Timestamp: ${timestamp} milliseconds
+    <br/> -->
+    <!-- Format the date & time -->
+    <j:new className="java.text.SimpleDateFormat" var="formatterDateTime">
+        <j:arg value="yyyy-MM-dd HH:mm:ss"/>
+    </j:new>
+    <j:invoke on="${formatterDateTime}" method="format" var="formattedDateTime">
+        <j:arg value="${now}"/>
+    </j:invoke>
+        Formatted Date and Time: ${formattedDateTime}
+    <br/>
+    <!-- Format the time -->
+    <j:new className="java.text.SimpleDateFormat" var="formattertime">
+        <j:arg value="HH:mm:ss"/>
+    </j:new>
+    <j:invoke on="${formattertime}" method="format" var="formattedTime">
+        <j:arg value="${now}"/>
+    </j:invoke>
+        Formatted Time: ${formattedTime}
+    <br/>
+    <!-- Format the date -->
+    <j:new className="java.text.SimpleDateFormat" var="formatter">
+        <j:arg value="yyyy-MM-dd"/>
+    </j:new>
+    <j:invoke on="${formatter}" method="format" var="formattedDate">
+        <j:arg value="${now}"/>
+    </j:invoke>
+        Formatted Date: ${formattedDate}
+    <br/>
+    <!-- Format the custom date & time -->
+    <j:new className="java.text.SimpleDateFormat" var="formatterCust">
+        <j:arg value="yyyy-MM-dd HH:mm:ss"/>
+    </j:new>
+    <j:invoke on="${formatterCust}" method="parse" var="formattedCustDateTime">
+        <j:arg value="2024-11-07 12:30:08"/>
+    </j:invoke>
+    <j:invoke on="${formatterCust}" method="format" var="formattedDateC">
+        <j:arg value="${formattedCustDateTime}"/>
+    </j:invoke>
+        Formatted Cust Date and Time: ${formattedDateC}
+    <br/>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:getStatic var="pi" className="java.lang.Math" field="PI"/>
+    <j:getStatic var="e" className="java.lang.Math" field="E"/>
+
+    PI value: ${pi}
+    E value: ${e}
+    <br/>
+    <j:invokeStatic var="maxValue" className="java.lang.Math" method="max">
+        <j:arg value="10" type="int"/>
+        <!-- Specify the type -->
+        <j:arg value="20" type="int"/>
+    </j:invokeStatic>
+     Max of 10 and 20: ${maxValue}
+    <br/>
+    <j:new className="java.util.Random" var="random"/>
+    <j:invoke on="${random}" method="nextInt" var="randNum">
+        <j:arg value="100" type="int"/>
+    </j:invoke>
+    Random number: ${randNum}
+    <br/>
+</j:jelly>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:getStatic var="pi" className="java.lang.Math" field="PI"/>
+    <j:getStatic var="e" className="java.lang.Math" field="E"/>
+
+    PI value: ${pi}
+    E value: ${e}
+    <br/>
+    <j:invokeStatic var="maxValue" className="java.lang.Math" method="max">
+        <j:arg value="10" type="int"/>
+        <!-- Specify the type -->
+        <j:arg value="20" type="int"/>
+    </j:invokeStatic>
+     Max of 10 and 20: ${maxValue}
+    <br/>
+    <j:new className="java.util.Random" var="random"/>
+    <j:invoke on="${random}" method="nextInt" var="randNum">
+        <j:arg value="100" type="int"/>
+    </j:invoke>
+    Random number: ${randNum}
+    <br/>
+</j:jelly>
