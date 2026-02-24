@@ -1,8 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <j:jelly xmlns:j="jelly:core">
-    <j:set var="arr" value="hady,aly,omar">
-</j:set>
-    <j:forEach var="arr_item" items="${arr}">
-        <p>${arr_item}</p>
-    </j:forEach>
+    <!-- Create formatter -->
+    <j:new className="java.text.SimpleDateFormat" var="formatter">
+        <j:arg value="yyyy-MM-dd HH:mm:ss"/>
+    </j:new>
+    <!-- Parse custom date string -->
+    <j:invoke on="${formatter}" method="parse" var="customDate">
+        <j:arg value="2023-05-10 15:30:00"/>
+    </j:invoke>
+        Custom date: ${customDate}
+    <br/>
+    <!-- Get timestamp -->
+    <j:invoke on="${customDate}" method="getTime" var="timestamp"/>
+        Timestamp: ${timestamp}
 </j:jelly>

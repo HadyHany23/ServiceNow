@@ -1,3 +1,12 @@
+VS Termnal COMMAND
+
+mvn exec:java -D"exec.mainClass=org.apache.commons.jelly.Jelly" -D"exec.args=variable.jelly -o target/page.html"
+
+POWER SHELL
+
+mvn exec:java -Dexec.mainClass=org.apache.commons.jelly.Jelly -Dexec.args="variable.jelly -o target/page.html"
+
+<!-- ######################################################### -->
 <?xml version="1.0" encoding="utf-8"?>
 <j:jelly xmlns:j="jelly:core">
 <html>
@@ -46,3 +55,151 @@
         <p>${arr_item}</p>
     </j:forEach>
 </j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:set var="arr" value="hady,aly,omar">
+</j:set>
+    <j:forEach var="arr_item" items="${arr}">
+        <p>${arr_item}</p>
+    </j:forEach>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core">
+    <!-- Standard Jelly uses <j:set> to define variables. 
+         We split a string to create an iterable array. -->
+    <j:set var="colors" value="pink,green,violet,indigo,blue,yellow,orange,white,red"/>
+    <j:forEach var="jvar_colors" items="${colors.split(',')}">
+        <p>Color: &#160;
+            <span style="color:${jvar_colors}">${jvar_colors}</span>
+        </p>
+    </j:forEach>
+    <j:forEach var="jvar_index" begin="0" end="20" step="2">
+        ${jvar_index}
+    </j:forEach>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Set a variable -->
+    <j:set var="name" value="Alice"/>
+    <j:set var="age" value="20"/>
+    <!-- If condition -->
+    <j:if test="${age >= 18}">
+        <j:expr value="Hello ${name}, you are an adult."/>
+    </j:if>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Set a variable -->
+    <j:set var="name" value="Alice"/>
+    <j:set var="age" value="20"/>
+    <!-- If condition -->
+    <j:if test="${age >= 18}">
+        <j:expr value="Hello ${name}, you are an adult."/>
+    </j:if>
+    <!-- Choose / When / Otherwise -->
+    <j:choose>
+        <j:when test="${age &lt; 13}">
+            Child
+        </j:when>
+        <j:when test="${age &lt; 20}">
+            Teenager
+        </j:when>
+        <j:otherwise>
+            Adult
+        </j:otherwise>
+    </j:choose>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Loop example -->
+    <j:set var="numbers" value="1,2,3,4,5"/>
+    <j:forEach var="num" items="${numbers}">
+        Number: ${num}
+        <br/>
+    </j:forEach>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- For array -->
+    <j:set var="names" value="['Alice', 'Bob', 'Charlie', 'Diana']"/>
+    <j:forEach var="currentName" items="${names}">
+    Name: ${currentName}
+        <br/>
+    </j:forEach>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Create Java ArrayList -->
+    <j:new className="java.util.ArrayList" var="names"/>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Alice"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Bob"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Charlie"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Diana"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="remove">
+        <j:arg value="Bob"/>
+    </j:invoke>
+    <!-- Loop through it -->
+    <j:forEach var="currentName" items="${names}">
+    Name: ${currentName}
+        <br/>
+    </j:forEach>
+</j:jelly>
+
+
+<j:new>	Create Java objects
+<j:invoke>	Call Java methods
+<j:arg>	Pass method parameters
+<j:forEach>	Loop over collections
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Create a Date object (current date/time) -->
+    <j:new className="java.util.Date" var="now"/>
+        Current date/time: ${now}
+    <br/>
+    <!-- Get timestamp in milliseconds -->
+    <j:invoke on="${now}" method="getTime" var="timestamp"/>
+        Timestamp: ${timestamp} milliseconds
+    <br/>
+    <!-- Format the date -->
+    <j:new className="java.text.SimpleDateFormat" var="formatter">
+        <j:arg value="yyyy-MM-dd HH:mm:ss"/>
+    </j:new>
+    <j:invoke on="${formatter}" method="format" var="formattedDate">
+        <j:arg value="${now}"/>
+    </j:invoke>
+        Formatted date: ${formattedDate}
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Create formatter -->
+    <j:new className="java.text.SimpleDateFormat" var="formatter">
+        <j:arg value="yyyy-MM-dd HH:mm:ss"/>
+    </j:new>
+    <!-- Parse custom date string -->
+    <j:invoke on="${formatter}" method="parse" var="customDate">
+        <j:arg value="2023-05-10 15:30:00"/>
+    </j:invoke>
+        Custom date: ${customDate}
+    <br/>
+    <!-- Get timestamp -->
+    <j:invoke on="${customDate}" method="getTime" var="timestamp"/>
+        Timestamp: ${timestamp}
+</j:jelly>
+<!-- ######################################################### -->
