@@ -168,6 +168,68 @@ mvn exec:java -Dexec.mainClass=org.apache.commons.jelly.Jelly -Dexec.args="varia
 <!-- ######################################################### -->
 <?xml version="1.0"?>
 <j:jelly xmlns:j="jelly:core">
+    <!-- Create Java ArrayList -->
+    <j:new className="java.util.ArrayList" var="names"/>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Alice"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Bob"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Charlie"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Diana"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="remove">
+        <j:arg value="Bob"/>
+    </j:invoke>
+    <!-- Loop through it -->
+    <html>
+        <style>
+    table {
+      border: 1px solid blue;
+      padding: 5px;
+      width: 500px;
+      text-align: center;
+    }
+    table th,
+    td {
+      padding: 5px;
+    }
+    table thead {
+      background-color: black;
+      color: white;
+    }
+    table tbody {
+      background-color: grey;
+      color: black;
+    }
+  </style>
+        <body>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <j:forEach var="currentName" items="${names}" varStatus="status">
+                        <tr>
+                            <td>${status.index + 1}</td>
+                            <td>${currentName}</td>
+                        </tr>
+                    </j:forEach>
+                </tbody>
+            </table>
+        </body>
+    </html>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
     <!-- Create a Date object (current date/time) -->
     <j:new className="java.util.Date" var="now"/>
         Current date/time: ${now}
@@ -176,6 +238,10 @@ mvn exec:java -Dexec.mainClass=org.apache.commons.jelly.Jelly -Dexec.args="varia
     <j:invoke on="${now}" method="getTime" var="timestamp"/>
         Timestamp: ${timestamp} milliseconds
     <br/>
+    <!-- Format the time -->
+    <j:new className="java.text.SimpleDateFormat" var="formatter">
+        <j:arg value="HH:mm:ss"/>
+    </j:new>
     <!-- Format the date -->
     <j:new className="java.text.SimpleDateFormat" var="formatter">
         <j:arg value="yyyy-MM-dd HH:mm:ss"/>

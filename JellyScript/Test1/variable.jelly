@@ -1,16 +1,50 @@
 <?xml version="1.0"?>
 <j:jelly xmlns:j="jelly:core">
-    <!-- Create formatter -->
-    <j:new className="java.text.SimpleDateFormat" var="formatter">
+    <!-- Create a Date object (current date/time) -->
+    <j:new className="java.util.Date" var="now"/>
+        Current date/time: ${now}
+    <br/>
+    <!-- Get timestamp in milliseconds -->
+    <!-- <j:invoke on="${now}" method="getTime" var="timestamp"/>
+        Timestamp: ${timestamp} milliseconds
+    <br/> -->
+    <!-- Format the date & time -->
+    <j:new className="java.text.SimpleDateFormat" var="formatterDateTime">
         <j:arg value="yyyy-MM-dd HH:mm:ss"/>
     </j:new>
-    <!-- Parse custom date string -->
-    <j:invoke on="${formatter}" method="parse" var="customDate">
-        <j:arg value="2023-05-10 15:30:00"/>
+    <j:invoke on="${formatterDateTime}" method="format" var="formattedDateTime">
+        <j:arg value="${now}"/>
     </j:invoke>
-        Custom date: ${customDate}
+        Formatted Date and Time: ${formattedDateTime}
     <br/>
-    <!-- Get timestamp -->
-    <j:invoke on="${customDate}" method="getTime" var="timestamp"/>
-        Timestamp: ${timestamp}
+    <!-- Format the time -->
+    <j:new className="java.text.SimpleDateFormat" var="formattertime">
+        <j:arg value="HH:mm:ss"/>
+    </j:new>
+    <j:invoke on="${formattertime}" method="format" var="formattedTime">
+        <j:arg value="${now}"/>
+    </j:invoke>
+        Formatted Time: ${formattedTime}
+    <br/>
+    <!-- Format the date -->
+    <j:new className="java.text.SimpleDateFormat" var="formatter">
+        <j:arg value="yyyy-MM-dd"/>
+    </j:new>
+    <j:invoke on="${formatter}" method="format" var="formattedDate">
+        <j:arg value="${now}"/>
+    </j:invoke>
+        Formatted Date: ${formattedDate}
+    <br/>
+    <!-- Format the custom date & time -->
+    <j:new className="java.text.SimpleDateFormat" var="formatterCust">
+        <j:arg value="yyyy-MM-dd HH:mm:ss"/>
+    </j:new>
+    <j:invoke on="${formatterCust}" method="parse" var="formattedCustDateTime">
+        <j:arg value="2024-11-07 12:30:08"/>
+    </j:invoke>
+    <j:invoke on="${formatterCust}" method="format" var="formattedDateC">
+        <j:arg value="${formattedCustDateTime}"/>
+    </j:invoke>
+        Formatted Cust Date and Time: ${formattedDateC}
+    <br/>
 </j:jelly>
