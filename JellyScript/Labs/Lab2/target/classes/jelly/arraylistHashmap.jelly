@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:new className="java.util.ArrayList" var="users"/>
+    <!-- ================= USER 1 ================= -->
+    <j:new className="java.util.HashMap" var="user1"/>
+    <j:invoke on="${user1}" method="put">
+        <j:arg value="name"/>
+        <j:arg value="mohamed"/>
+    </j:invoke>
+    <j:invoke on="${user1}" method="put">
+        <j:arg value="age"/>
+        <j:arg value="30"/>
+    </j:invoke>
+    <j:invoke on="${user1}" method="put">
+        <j:arg value="city"/>
+        <j:arg value="New York"/>
+    </j:invoke>
+    <j:invoke on="${users}" method="add">
+        <j:arg value="${user1}"/>
+    </j:invoke>
+    <!-- ================= USER 2 ================= -->
+    <j:new className="java.util.HashMap" var="user2"/>
+    <j:invoke on="${user2}" method="put">
+        <j:arg value="name"/>
+        <j:arg value="hady"/>
+    </j:invoke>
+    <j:invoke on="${user2}" method="put">
+        <j:arg value="age"/>
+        <j:arg value="25"/>
+    </j:invoke>
+    <j:invoke on="${user2}" method="put">
+        <j:arg value="city"/>
+        <j:arg value="London"/>
+    </j:invoke>
+    <j:invoke on="${users}" method="add">
+        <j:arg value="${user2}"/>
+    </j:invoke>
+    <!-- ================= USER 3 ================= -->
+    <j:new className="java.util.HashMap" var="user3"/>
+    <j:invoke on="${user3}" method="put">
+        <j:arg value="name"/>
+        <j:arg value="ahmed"/>
+    </j:invoke>
+    <j:invoke on="${user3}" method="put">
+        <j:arg value="age"/>
+        <j:arg value="40"/>
+    </j:invoke>
+    <j:invoke on="${user3}" method="put">
+        <j:arg value="city"/>
+        <j:arg value="Paris"/>
+    </j:invoke>
+    <j:invoke on="${users}" method="add">
+        <j:arg value="${user3}"/>
+    </j:invoke>
+    <!-- ================= LOOP THROUGH USERS ================= -->
+    <html>
+        <style>
+    table {
+      border: 1px solid blue;
+      padding: 5px;
+      width: 500px;
+      text-align: center;
+    }
+    table th,
+    td {
+      padding: 5px;
+    }
+    table thead {
+      background-color: black;
+      color: white;
+    }
+    table tbody {
+      background-color: grey;
+      color: black;
+    }
+  </style>
+        <body>
+            <h3>All Users:</h3>
+            <table >
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>City</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <j:forEach var="user" items="${users}" varStatus="status">
+                        <j:invoke on="${user}" method="get" var="name">
+                            <j:arg value="name"/>
+                        </j:invoke>
+                        <j:invoke on="${user}" method="get" var="age">
+                            <j:arg value="age"/>
+                        </j:invoke>
+                        <j:invoke on="${user}" method="get" var="city">
+                            <j:arg value="city"/>
+                        </j:invoke>
+                        <tr>
+                            <td>${status.index + 1}</td>
+                            <td>${name}</td>
+                            <td>${age}</td>
+                            <td>${city}</td>
+                        </tr>
+                    </j:forEach>
+                </tbody>
+            </table>
+        </body>
+    </html>
+</j:jelly>

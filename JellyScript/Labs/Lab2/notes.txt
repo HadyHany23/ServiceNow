@@ -1,3 +1,5 @@
+THIS IS THE FIRST JELLY STRUCTURE COMPLETE FOLDER
+
 VS Termnal COMMAND
 
 mvn exec:java -D"exec.mainClass=org.apache.commons.jelly.Jelly" -D"exec.args=lab2.jelly -o target/lab2.html"
@@ -5,3 +7,176 @@ mvn exec:java -D"exec.mainClass=org.apache.commons.jelly.Jelly" -D"exec.args=lab
 POWER SHELL
 
 mvn exec:java -Dexec.mainClass=org.apache.commons.jelly.Jelly -Dexec.args="lab2.jelly -o target/lab2.html"
+
+BUILD JELLY FOLDER STRUCTURE  
+
+mvn clean compile exec:java "-Dexec.mainClass=Main“
+
+<!-- ######################################################### -->
+<!-- Create HashMap -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Create HashMap -->
+    <j:new className="java.util.HashMap" var="user"/>
+    <!-- Put key-value pairs -->
+    <j:invoke on="${user}" method="put">
+        <j:arg value="name"/>
+        <j:arg value="John Doe"/>
+    </j:invoke>
+    <j:invoke on="${user}" method="put">
+        <j:arg value="age"/>
+        <j:arg value="30"/>
+    </j:invoke>
+    <j:invoke on="${user}" method="put">
+        <j:arg value="city"/>
+        <j:arg value="New York"/>
+    </j:invoke>
+    <!-- Get values -->
+    <j:invoke on="${user}" method="get" var="userName">
+        <j:arg value="name"/>
+    </j:invoke>
+    <j:invoke on="${user}" method="get" var="userAge">
+        <j:arg value="age"/>
+    </j:invoke>
+  
+  Name: ${userName}
+    <br/>
+  Age: ${userAge}
+    <br/>
+    <!-- Loop through entries -->
+    <j:invoke on="${user}" method="entrySet" var="entries"/>
+        <!-- Convert Map to entrySet() / entrySet() returns a collection of objects -->
+    <j:forEach var="entry" items="${entries}">
+        <j:invoke on="${entry}" method="getKey" var="key"/>
+        <j:invoke on="${entry}" method="getValue" var="value"/>
+    ${key} = ${value}
+        <br/>
+    </j:forEach>
+</j:jelly>
+<!-- ######################################################### -->
+<!-- Create Colors -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:getStatic var="red" className="java.awt.Color" field="RED"/>
+    <j:getStatic var="green" className="java.awt.Color" field="GREEN"/>
+    <j:getStatic var="blue" className="java.awt.Color" field="BLUE"/>
+    <!-- Method 2: Creating custom colors -->
+    <j:new className="java.awt.Color" var="purple">
+        <j:arg value="128" type="int"/>
+        <j:arg value="0" type="int"/>
+        <j:arg value="128" type="int"/>
+    </j:new>
+    <!--######################## Part 2 ######################## -->
+    <j:new className="java.awt.Color" var="teal">
+        <j:arg value="0" type="int"/>
+        <j:arg value="128" type="int"/>
+        <j:arg value="128" type="int"/>
+    </j:new>
+    <!-- Method 3: With alpha -->
+    <j:new className="java.awt.Color" var="transparentRed">
+        <j:arg value="255" type="int"/>
+        <j:arg value="0" type="int"/>
+        <j:arg value="0" type="int"/>
+        <j:arg value="100" type="int"/>
+        <!-- 100/255 transparency -->
+    </j:new>
+    <!--######################## Part 3 ######################## -->
+    <!-- Get RGB components -->
+    <j:invoke on="${purple}" method="getRed" var="r"/>
+    <j:invoke on="${purple}" method="getGreen" var="g"/>
+    <j:invoke on="${purple}" method="getBlue" var="b"/>
+    <!-- Display results -->
+    <h3>Colors:</h3>
+  Red (static): ${red}
+    <br/>
+  Green (static): ${green}
+    <br/>
+  Blue (static): ${blue}
+    <br/>
+  Purple (custom): R=${r}, G=${g}, B=${b}
+    <br/>
+    <!-- Get RGB integer value -->
+    <j:invoke on="${teal}" method="getRGB" var="rgb"/>
+  Teal RGB value: ${rgb}
+    <br/>
+    <!-- Check if colors are equal -->
+    <j:invoke on="${red}" method="equals" var="isEqual">
+        <j:arg value="${red}"/>
+    </j:invoke>
+  Red equals itself: ${isEqual}
+</j:jelly>
+<!-- ######################################################### -->
+<!-- Create Colors part 2 -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <h2>Task 1: Create Static Colors</h2>
+    <j:getStatic var="red" className="java.awt.Color" field="RED"/>
+    <j:getStatic var="green" className="java.awt.Color" field="GREEN"/>
+    <j:getStatic var="blue" className="java.awt.Color" field="BLUE"/>
+
+    Red: ${red}
+    <br/>
+    Green: ${green}
+    <br/>
+    Blue: ${blue}
+    <br/>
+    <br/>
+    <h2>Task 2: Create Custom Colors</h2>
+    <j:new className="java.awt.Color" var="purple">
+        <j:arg value="128" type="int"/>
+        <j:arg value="0" type="int"/>
+        <j:arg value="128" type="int"/>
+    </j:new>
+    <j:new className="java.awt.Color" var="teal">
+        <j:arg value="0" type="int"/>
+        <j:arg value="128" type="int"/>
+        <j:arg value="128" type="int"/>
+    </j:new>
+
+    Purple: ${purple}
+    <br/>
+    Teal: ${teal}
+    <br/>
+    <br/>
+    <h2>Task 3: Extract RGB Components</h2>
+    <j:invoke on="${purple}" method="getRed" var="r"/>
+    <j:invoke on="${purple}" method="getGreen" var="g"/>
+    <j:invoke on="${purple}" method="getBlue" var="b"/>
+
+    Purple RGB → R=${r}, G=${g}, B=${b}
+    <br/>
+    <br/>
+    <h2>Task 4: Get RGB Integer Value</h2>
+    <j:invoke on="${teal}" method="getRGB" var="rgbValue"/>
+    Teal getRGB(): ${rgbValue}
+    <br/>
+    <br/>
+    <h2>Task 5: Compare Colors</h2>
+    <j:invoke on="${red}" method="equals" var="isSameColor">
+        <j:arg value="${blue}"/>
+    </j:invoke>
+
+    Is Red equal to Blue? ${isSameColor}
+    <br/>
+    <br/>
+    <h2>Task 6: Store Colors in List and Loop</h2>
+    <j:new className="java.util.ArrayList" var="colorList"/>
+    <j:invoke on="${colorList}" method="add">
+        <j:arg value="${red}"/>
+    </j:invoke>
+    <j:invoke on="${colorList}" method="add">
+        <j:arg value="${green}"/>
+    </j:invoke>
+    <j:invoke on="${colorList}" method="add">
+        <j:arg value="${purple}"/>
+    </j:invoke>
+    <j:forEach var="color" items="${colorList}">
+        <j:invoke on="${color}" method="getRed" var="cr"/>
+        <j:invoke on="${color}" method="getGreen" var="cg"/>
+        <j:invoke on="${color}" method="getBlue" var="cb"/>
+
+        Color → R=${cr}, G=${cg}, B=${cb}
+        <br/>
+    </j:forEach>
+</j:jelly>
+<!-- ######################################################### -->

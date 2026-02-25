@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Create HashMap -->
+    <j:new className="java.util.HashMap" var="user"/>
+    <!-- Put key-value pairs -->
+    <j:invoke on="${user}" method="put">
+        <j:arg value="name"/>
+        <j:arg value="John Doe"/>
+    </j:invoke>
+    <j:invoke on="${user}" method="put">
+        <j:arg value="age"/>
+        <j:arg value="30"/>
+    </j:invoke>
+    <j:invoke on="${user}" method="put">
+        <j:arg value="city"/>
+        <j:arg value="New York"/>
+    </j:invoke>
+    <!-- Get values -->
+    <j:invoke on="${user}" method="get" var="userName">
+        <j:arg value="name"/>
+    </j:invoke>
+    <j:invoke on="${user}" method="get" var="userAge">
+        <j:arg value="age"/>
+    </j:invoke>
+    <j:invoke on="${user}" method="get" var="userCity">
+        <j:arg value="city"/>
+    </j:invoke>
+  
+    Name: ${userName}
+    <br/>
+    Age: ${userAge}
+    <br/>
+    City: ${userCity}
+    <br/>
+    <!-- Loop through entries -->
+    <j:invoke on="${user}" method="entrySet" var="entries"/>
+    <!-- Convert Map to entrySet() / entrySet() returns a collection of objects -->
+    <j:forEach var="entry" items="${entries}">
+        <j:invoke on="${entry}" method="getKey" var="key"/>
+        <j:invoke on="${entry}" method="getValue" var="value"/>
+    ${key} = ${value}
+        <br/>
+    </j:forEach>
+</j:jelly>
