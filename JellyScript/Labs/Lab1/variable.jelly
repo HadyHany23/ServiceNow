@@ -1,22 +1,72 @@
 <?xml version="1.0"?>
 <j:jelly xmlns:j="jelly:core">
-    <j:getStatic var="pi" className="java.lang.Math" field="PI"/>
-    <j:getStatic var="e" className="java.lang.Math" field="E"/>
+    <h2>Task 1: Create Static Colors</h2>
+    <j:getStatic var="red" className="java.awt.Color" field="RED"/>
+    <j:getStatic var="green" className="java.awt.Color" field="GREEN"/>
+    <j:getStatic var="blue" className="java.awt.Color" field="BLUE"/>
 
-    PI value: ${pi}
-    E value: ${e}
+    Red: ${red}
     <br/>
-    <j:invokeStatic var="maxValue" className="java.lang.Math" method="max">
-        <j:arg value="10" type="int"/>
-        <!-- Specify the type -->
-        <j:arg value="20" type="int"/>
-    </j:invokeStatic>
-     Max of 10 and 20: ${maxValue}
+    Green: ${green}
     <br/>
-    <j:new className="java.util.Random" var="random"/>
-    <j:invoke on="${random}" method="nextInt" var="randNum">
-        <j:arg value="100" type="int"/>
+    Blue: ${blue}
+    <br/>
+    <br/>
+    <h2>Task 2: Create Custom Colors</h2>
+    <j:new className="java.awt.Color" var="purple">
+        <j:arg value="128" type="int"/>
+        <j:arg value="0" type="int"/>
+        <j:arg value="128" type="int"/>
+    </j:new>
+    <j:new className="java.awt.Color" var="teal">
+        <j:arg value="0" type="int"/>
+        <j:arg value="128" type="int"/>
+        <j:arg value="128" type="int"/>
+    </j:new>
+
+    Purple: ${purple}
+    <br/>
+    Teal: ${teal}
+    <br/>
+    <br/>
+    <h2>Task 3: Extract RGB Components</h2>
+    <j:invoke on="${purple}" method="getRed" var="r"/>
+    <j:invoke on="${purple}" method="getGreen" var="g"/>
+    <j:invoke on="${purple}" method="getBlue" var="b"/>
+
+    Purple RGB → R=${r}, G=${g}, B=${b}
+    <br/>
+    <br/>
+    <h2>Task 4: Get RGB Integer Value</h2>
+    <j:invoke on="${teal}" method="getRGB" var="rgbValue"/>
+    Teal getRGB(): ${rgbValue}
+    <br/>
+    <br/>
+    <h2>Task 5: Compare Colors</h2>
+    <j:invoke on="${red}" method="equals" var="isSameColor">
+        <j:arg value="${blue}"/>
     </j:invoke>
-    Random number: ${randNum}
+
+    Is Red equal to Blue? ${isSameColor}
     <br/>
+    <br/>
+    <h2>Task 6: Store Colors in List and Loop</h2>
+    <j:new className="java.util.ArrayList" var="colorList"/>
+    <j:invoke on="${colorList}" method="add">
+        <j:arg value="${red}"/>
+    </j:invoke>
+    <j:invoke on="${colorList}" method="add">
+        <j:arg value="${green}"/>
+    </j:invoke>
+    <j:invoke on="${colorList}" method="add">
+        <j:arg value="${purple}"/>
+    </j:invoke>
+    <j:forEach var="color" items="${colorList}">
+        <j:invoke on="${color}" method="getRed" var="cr"/>
+        <j:invoke on="${color}" method="getGreen" var="cg"/>
+        <j:invoke on="${color}" method="getBlue" var="cb"/>
+
+        Color → R=${cr}, G=${cg}, B=${cb}
+        <br/>
+    </j:forEach>
 </j:jelly>

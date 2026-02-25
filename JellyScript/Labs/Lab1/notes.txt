@@ -5,3 +5,613 @@ mvn exec:java -D"exec.mainClass=org.apache.commons.jelly.Jelly" -D"exec.args=var
 POWER SHELL
 
 mvn exec:java -Dexec.mainClass=org.apache.commons.jelly.Jelly -Dexec.args="variable.jelly -o target/page.html"
+
+<!-- ######################################################### -->
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+<html>
+<body>
+<h1>Hello</h1>
+</body>
+</html>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+<j:set var="jvar_age" value="16">
+</j:set>
+
+<j:if test="${jvar_age lt 18}">
+<p>sorry</p>
+</j:if>
+
+<j:if test="${jvar_age ge 18}">
+<p>done</p>
+</j:if>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:set var="jvar_name" value="hady">
+</j:set>
+    <j:choose>
+        <j:when test="${jvar_name eq 'aly'}">
+            <p>welcome aly</p>
+        </j:when>
+        <j:when test="${jvar_name eq 'ahmed'}">
+            <p>welcome ahmed</p>
+        </j:when>
+        <j:otherwise >
+            <p>Welcome ${jvar_name}</p>
+        </j:otherwise>
+    </j:choose>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:set var="arr" value="hady,aly,omar">
+</j:set>
+    <j:forEach var="arr_item" items="${arr}">
+        <p>${arr_item}</p>
+    </j:forEach>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:set var="arr" value="hady,aly,omar">
+</j:set>
+    <j:forEach var="arr_item" items="${arr}">
+        <p>${arr_item}</p>
+    </j:forEach>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core">
+    <!-- Standard Jelly uses <j:set> to define variables. 
+         We split a string to create an iterable array. -->
+    <j:set var="colors" value="pink,green,violet,indigo,blue,yellow,orange,white,red"/>
+    <j:forEach var="jvar_colors" items="${colors.split(',')}">
+        <p>Color: &#160;
+            <span style="color:${jvar_colors}">${jvar_colors}</span>
+        </p>
+    </j:forEach>
+    <j:forEach var="jvar_index" begin="0" end="20" step="2">
+        ${jvar_index}
+    </j:forEach>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Set a variable -->
+    <j:set var="name" value="Alice"/>
+    <j:set var="age" value="20"/>
+    <!-- If condition -->
+    <j:if test="${age >= 18}">
+        <j:expr value="Hello ${name}, you are an adult."/>
+    </j:if>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Set a variable -->
+    <j:set var="name" value="Alice"/>
+    <j:set var="age" value="20"/>
+    <!-- If condition -->
+    <j:if test="${age >= 18}">
+        <j:expr value="Hello ${name}, you are an adult."/>
+    </j:if>
+    <!-- Choose / When / Otherwise -->
+    <j:choose>
+        <j:when test="${age &lt; 13}">
+            Child
+        </j:when>
+        <j:when test="${age &lt; 20}">
+            Teenager
+        </j:when>
+        <j:otherwise>
+            Adult
+        </j:otherwise>
+    </j:choose>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Loop example -->
+    <j:set var="numbers" value="1,2,3,4,5"/>
+    <j:forEach var="num" items="${numbers}">
+        Number: ${num}
+        <br/>
+    </j:forEach>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- For array -->
+    <j:set var="names" value="['Alice', 'Bob', 'Charlie', 'Diana']"/>
+    <j:forEach var="currentName" items="${names}">
+    Name: ${currentName}
+        <br/>
+    </j:forEach>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Create Java ArrayList -->
+    <j:new className="java.util.ArrayList" var="names"/>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Alice"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Bob"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Charlie"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Diana"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="remove">
+        <j:arg value="Bob"/>
+    </j:invoke>
+    <!-- Loop through it -->
+    <j:forEach var="currentName" items="${names}">
+    Name: ${currentName}
+        <br/>
+    </j:forEach>
+</j:jelly>
+
+
+<j:new>	Create Java objects
+<j:invoke>	Call Java methods
+<j:arg>	Pass method parameters
+<j:forEach>	Loop over collections
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Create Java ArrayList -->
+    <j:new className="java.util.ArrayList" var="names"/>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Alice"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Bob"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Charlie"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="add">
+        <j:arg value="Diana"/>
+    </j:invoke>
+    <j:invoke on="${names}" method="remove">
+        <j:arg value="Bob"/>
+    </j:invoke>
+    <!-- Loop through it -->
+    <html>
+        <style>
+    table {
+      border: 1px solid blue;
+      padding: 5px;
+      width: 500px;
+      text-align: center;
+    }
+    table th,
+    td {
+      padding: 5px;
+    }
+    table thead {
+      background-color: black;
+      color: white;
+    }
+    table tbody {
+      background-color: grey;
+      color: black;
+    }
+  </style>
+        <body>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <j:forEach var="currentName" items="${names}" varStatus="status">
+                        <tr>
+                            <td>${status.index + 1}</td>
+                            <td>${currentName}</td>
+                        </tr>
+                    </j:forEach>
+                </tbody>
+            </table>
+        </body>
+    </html>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Create a Date object (current date/time) -->
+    <j:new className="java.util.Date" var="now"/>
+        Current date/time: ${now}
+    <br/>
+    <!-- Get timestamp in milliseconds -->
+    <j:invoke on="${now}" method="getTime" var="timestamp"/>
+        Timestamp: ${timestamp} milliseconds
+    <br/>
+    <!-- Format the time -->
+    <j:new className="java.text.SimpleDateFormat" var="formatter">
+        <j:arg value="HH:mm:ss"/>
+    </j:new>
+    <!-- Format the date -->
+    <j:new className="java.text.SimpleDateFormat" var="formatter">
+        <j:arg value="yyyy-MM-dd HH:mm:ss"/>
+    </j:new>
+    <j:invoke on="${formatter}" method="format" var="formattedDate">
+        <j:arg value="${now}"/>
+    </j:invoke>
+        Formatted date: ${formattedDate}
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Create formatter -->
+    <j:new className="java.text.SimpleDateFormat" var="formatter">
+        <j:arg value="yyyy-MM-dd HH:mm:ss"/>
+    </j:new>
+    <!-- Parse custom date string -->
+    <j:invoke on="${formatter}" method="parse" var="customDate">
+        <j:arg value="2023-05-10 15:30:00"/>
+    </j:invoke>
+        Custom date: ${customDate}
+    <br/>
+    <!-- Get timestamp -->
+    <j:invoke on="${customDate}" method="getTime" var="timestamp"/>
+        Timestamp: ${timestamp}
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Create a Date object (current date/time) -->
+    <j:new className="java.util.Date" var="now"/>
+        Current date/time: ${now}
+    <br/>
+    <!-- Get timestamp in milliseconds -->
+    <!-- <j:invoke on="${now}" method="getTime" var="timestamp"/>
+        Timestamp: ${timestamp} milliseconds
+    <br/> -->
+    <!-- Format the date & time -->
+    <j:new className="java.text.SimpleDateFormat" var="formatterDateTime">
+        <j:arg value="yyyy-MM-dd HH:mm:ss"/>
+    </j:new>
+    <j:invoke on="${formatterDateTime}" method="format" var="formattedDateTime">
+        <j:arg value="${now}"/>
+    </j:invoke>
+        Formatted Date and Time: ${formattedDateTime}
+    <br/>
+    <!-- Format the time -->
+    <j:new className="java.text.SimpleDateFormat" var="formattertime">
+        <j:arg value="HH:mm:ss"/>
+    </j:new>
+    <j:invoke on="${formattertime}" method="format" var="formattedTime">
+        <j:arg value="${now}"/>
+    </j:invoke>
+        Formatted Time: ${formattedTime}
+    <br/>
+    <!-- Format the date -->
+    <j:new className="java.text.SimpleDateFormat" var="formatter">
+        <j:arg value="yyyy-MM-dd"/>
+    </j:new>
+    <j:invoke on="${formatter}" method="format" var="formattedDate">
+        <j:arg value="${now}"/>
+    </j:invoke>
+        Formatted Date: ${formattedDate}
+    <br/>
+    <!-- Format the custom date & time -->
+    <j:new className="java.text.SimpleDateFormat" var="formatterCust">
+        <j:arg value="yyyy-MM-dd HH:mm:ss"/>
+    </j:new>
+    <j:invoke on="${formatterCust}" method="parse" var="formattedCustDateTime">
+        <j:arg value="2024-11-07 12:30:08"/>
+    </j:invoke>
+    <j:invoke on="${formatterCust}" method="format" var="formattedDateC">
+        <j:arg value="${formattedCustDateTime}"/>
+    </j:invoke>
+        Formatted Cust Date and Time: ${formattedDateC}
+    <br/>
+</j:jelly>
+<!-- ######################################################### -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:getStatic var="pi" className="java.lang.Math" field="PI"/>
+    <j:getStatic var="e" className="java.lang.Math" field="E"/>
+
+    PI value: ${pi}
+    E value: ${e}
+    <br/>
+    <j:invokeStatic var="maxValue" className="java.lang.Math" method="max">
+        <j:arg value="10" type="int"/>
+        <!-- Specify the type -->
+        <j:arg value="20" type="int"/>
+    </j:invokeStatic>
+     Max of 10 and 20: ${maxValue}
+    <br/>
+    <j:new className="java.util.Random" var="random"/>
+    <j:invoke on="${random}" method="nextInt" var="randNum">
+        <j:arg value="100" type="int"/>
+    </j:invoke>
+    Random number: ${randNum}
+    <br/>
+</j:jelly>
+<!-- ######################################################### -->
+<!-- Rounded -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:invokeStatic var="rounded" className="java.lang.Math" method="round">
+        <j:arg value="3.14159" type="float"/>
+    </j:invokeStatic>
+  Rounded PI: ${rounded}
+</j:jelly>
+<!-- ######################################################### -->
+<!-- String Builder -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Create StringBuilder -->
+    <j:new className="java.lang.StringBuilder" var="builder"/>
+    <!-- Append strings -->
+    <j:invoke on="${builder}" method="append">
+        <j:arg value="Hello"/>
+    </j:invoke>
+    <j:invoke on="${builder}" method="append">
+        <j:arg value=" "/>
+    </j:invoke>
+    <j:invoke on="${builder}" method="append">
+        <j:arg value="World"/>
+    </j:invoke>
+    <!-- Get the final string -->
+    <j:invoke on="${builder}" method="toString" var="message"/>
+  Message: ${message}
+    <br/>
+    <!-- Get length -->
+    <j:invoke on="${builder}" method="length" var="length"/>
+  Length: ${length}
+    <br/>
+    <!-- Reverse it -->
+    <j:invoke on="${builder}" method="reverse"/>
+  Reversed: ${builder.toString()}
+</j:jelly>
+<!-- ######################################################### -->
+<!-- Min -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:invokeStatic var="minValue" className="java.lang.Math" method="min">
+        <j:arg value="10" type="int"/>
+        <!-- Specify the type -->
+        <j:arg value="20" type="int"/>
+    </j:invokeStatic>
+     Min of 10 and 20: ${minValue}
+</j:jelly>
+<!-- ######################################################### -->
+<!-- Create HashMap -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <!-- Create HashMap -->
+    <j:new className="java.util.HashMap" var="user"/>
+    <!-- Put key-value pairs -->
+    <j:invoke on="${user}" method="put">
+        <j:arg value="name"/>
+        <j:arg value="John Doe"/>
+    </j:invoke>
+    <j:invoke on="${user}" method="put">
+        <j:arg value="age"/>
+        <j:arg value="30"/>
+    </j:invoke>
+    <j:invoke on="${user}" method="put">
+        <j:arg value="city"/>
+        <j:arg value="New York"/>
+    </j:invoke>
+    <!-- Get values -->
+    <j:invoke on="${user}" method="get" var="userName">
+        <j:arg value="name"/>
+    </j:invoke>
+    <j:invoke on="${user}" method="get" var="userAge">
+        <j:arg value="age"/>
+    </j:invoke>
+  
+  Name: ${userName}
+    <br/>
+  Age: ${userAge}
+    <br/>
+    <!-- Loop through entries -->
+    <j:invoke on="${user}" method="entrySet" var="entries"/>
+        <!-- Convert Map to entrySet() / entrySet() returns a collection of objects -->
+    <j:forEach var="entry" items="${entries}">
+        <j:invoke on="${entry}" method="getKey" var="key"/>
+        <j:invoke on="${entry}" method="getValue" var="value"/>
+    ${key} = ${value}
+        <br/>
+    </j:forEach>
+</j:jelly>
+<!-- ######################################################### -->
+<!-- Create Colors -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:getStatic var="red" className="java.awt.Color" field="RED"/>
+    <j:getStatic var="green" className="java.awt.Color" field="GREEN"/>
+    <j:getStatic var="blue" className="java.awt.Color" field="BLUE"/>
+    <!-- Method 2: Creating custom colors -->
+    <j:new className="java.awt.Color" var="purple">
+        <j:arg value="128" type="int"/>
+        <j:arg value="0" type="int"/>
+        <j:arg value="128" type="int"/>
+    </j:new>
+    <!--######################## Part 2 ######################## -->
+    <j:new className="java.awt.Color" var="teal">
+        <j:arg value="0" type="int"/>
+        <j:arg value="128" type="int"/>
+        <j:arg value="128" type="int"/>
+    </j:new>
+    <!-- Method 3: With alpha -->
+    <j:new className="java.awt.Color" var="transparentRed">
+        <j:arg value="255" type="int"/>
+        <j:arg value="0" type="int"/>
+        <j:arg value="0" type="int"/>
+        <j:arg value="100" type="int"/>
+        <!-- 100/255 transparency -->
+    </j:new>
+    <!--######################## Part 3 ######################## -->
+    <!-- Get RGB components -->
+    <j:invoke on="${purple}" method="getRed" var="r"/>
+    <j:invoke on="${purple}" method="getGreen" var="g"/>
+    <j:invoke on="${purple}" method="getBlue" var="b"/>
+    <!-- Display results -->
+    <h3>Colors:</h3>
+  Red (static): ${red}
+    <br/>
+  Green (static): ${green}
+    <br/>
+  Blue (static): ${blue}
+    <br/>
+  Purple (custom): R=${r}, G=${g}, B=${b}
+    <br/>
+    <!-- Get RGB integer value -->
+    <j:invoke on="${teal}" method="getRGB" var="rgb"/>
+  Teal RGB value: ${rgb}
+    <br/>
+    <!-- Check if colors are equal -->
+    <j:invoke on="${red}" method="equals" var="isEqual">
+        <j:arg value="${red}"/>
+    </j:invoke>
+  Red equals itself: ${isEqual}
+</j:jelly>
+<!-- ######################################################### -->
+<!-- Create Colors part 2 -->
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core">
+    <h2>Task 1: Create Static Colors</h2>
+    <j:getStatic var="red" className="java.awt.Color" field="RED"/>
+    <j:getStatic var="green" className="java.awt.Color" field="GREEN"/>
+    <j:getStatic var="blue" className="java.awt.Color" field="BLUE"/>
+
+    Red: ${red}
+    <br/>
+    Green: ${green}
+    <br/>
+    Blue: ${blue}
+    <br/>
+    <br/>
+    <h2>Task 2: Create Custom Colors</h2>
+    <j:new className="java.awt.Color" var="purple">
+        <j:arg value="128" type="int"/>
+        <j:arg value="0" type="int"/>
+        <j:arg value="128" type="int"/>
+    </j:new>
+    <j:new className="java.awt.Color" var="teal">
+        <j:arg value="0" type="int"/>
+        <j:arg value="128" type="int"/>
+        <j:arg value="128" type="int"/>
+    </j:new>
+
+    Purple: ${purple}
+    <br/>
+    Teal: ${teal}
+    <br/>
+    <br/>
+    <h2>Task 3: Extract RGB Components</h2>
+    <j:invoke on="${purple}" method="getRed" var="r"/>
+    <j:invoke on="${purple}" method="getGreen" var="g"/>
+    <j:invoke on="${purple}" method="getBlue" var="b"/>
+
+    Purple RGB → R=${r}, G=${g}, B=${b}
+    <br/>
+    <br/>
+    <h2>Task 4: Get RGB Integer Value</h2>
+    <j:invoke on="${teal}" method="getRGB" var="rgbValue"/>
+    Teal getRGB(): ${rgbValue}
+    <br/>
+    <br/>
+    <h2>Task 5: Compare Colors</h2>
+    <j:invoke on="${red}" method="equals" var="isSameColor">
+        <j:arg value="${blue}"/>
+    </j:invoke>
+
+    Is Red equal to Blue? ${isSameColor}
+    <br/>
+    <br/>
+    <h2>Task 6: Store Colors in List and Loop</h2>
+    <j:new className="java.util.ArrayList" var="colorList"/>
+    <j:invoke on="${colorList}" method="add">
+        <j:arg value="${red}"/>
+    </j:invoke>
+    <j:invoke on="${colorList}" method="add">
+        <j:arg value="${green}"/>
+    </j:invoke>
+    <j:invoke on="${colorList}" method="add">
+        <j:arg value="${purple}"/>
+    </j:invoke>
+    <j:forEach var="color" items="${colorList}">
+        <j:invoke on="${color}" method="getRed" var="cr"/>
+        <j:invoke on="${color}" method="getGreen" var="cg"/>
+        <j:invoke on="${color}" method="getBlue" var="cb"/>
+
+        Color → R=${cr}, G=${cg}, B=${cb}
+        <br/>
+    </j:forEach>
+</j:jelly>
+<!-- ######################################################### -->
+<!-- Study -->
+Pattern
+
+Create object
+
+Example
+
+<j:new className="java.util.Date"
+var="now"/>
+
+What It Does
+
+Creates new instance with default
+constructor
+
+Create with
+
+args
+
+Creates instance with constructor
+parameters
+
+Call method
+
+<j:new className="java.io.File"
+var="file"><j:arg
+value="/tmp/test.txt"/></j:new>
+
+<j:invoke on="${now}" method="getTime"
+var="timestamp"/>
+
+Calls instance method, stores result
+
+Call with args
+
+<j:invoke on="${builder}"
+method="append"><j:arg value="Hello"/>
+</j:invoke>
+
+Calls method with parameters
+
+Static field
+
+<j:getstatic var="pi"
+className="java.lang.Math"
+field="PI"/>
+
+Gets static field value
+
+Static method
+
+<j:invokestatic var="max"
+className="java.lang.Math"
+method="max"><j:arg value="10"/><j:arg
+value="20"/></j:invokestatic>
+
+Calls static method

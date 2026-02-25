@@ -1,0 +1,7 @@
+VS Termnal COMMAND
+
+mvn exec:java -D"exec.mainClass=org.apache.commons.jelly.Jelly" -D"exec.args=lab2.jelly -o target/lab2.html"
+
+POWER SHELL
+
+mvn exec:java -Dexec.mainClass=org.apache.commons.jelly.Jelly -Dexec.args="lab2.jelly -o target/lab2.html"
