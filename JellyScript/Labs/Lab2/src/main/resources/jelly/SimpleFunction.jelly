@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<j:jelly xmlns:j="jelly:core">
+    <j:new className="com.example.SimpleFunction" var="simple"/>
+    <!-- function 1 hello  -->
+    <j:invoke on="${simple}" method="hello" var="welcome">
+        <j:arg value="Hady"/>
+    </j:invoke>
+    <p>${welcome}</p>
+    <!-- function 2 even odd -->
+    <p>${simple.evenOdd(9)}</p>
+</j:jelly>
