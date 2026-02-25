@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Angular JS</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  </head>
+  <body>
+    <div ng-app="firstApp">
+      <div ng-controller="ctrl">
+        <h1>Hello {{name}}</h1>
+      </div>
+      <div ng-controller="ctrl2">
+        <h1>Hi {{fullname}}</h1>
+      </div>
+    </div>
+    <script>
+      var app = angular.module("firstApp", []);
+      app.controller("ctrl", function ($scope) {
+        $scope.name = "Laila";
+      });
+      app.controller("ctrl2", function ($scope) {
+        $scope.fullname = "Laila Hady";
+      });
+    </script>
+  </body>
+</html>

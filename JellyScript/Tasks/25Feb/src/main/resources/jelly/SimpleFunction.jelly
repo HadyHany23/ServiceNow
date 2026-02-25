@@ -8,4 +8,5 @@
     <p>${welcome}</p>
     <!-- function 2 even odd -->
     <p>${simple.evenOdd(9)}</p>
+    <p>${simple.evenOdd(10)}</p>
 </j:jelly>
