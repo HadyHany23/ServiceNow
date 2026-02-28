@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <!-- Angular JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <!-- BooStrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Style -->
+    <!-- <link rel="stylesheet" href="style.css" /> -->
+  </head>
+  <body>
+    <!-- Interface -->
+    <div
+      class="container vh-100 d-flex justify-content-center align-items-center"
+      ng-app="myApp"
+      ng-controller="myCtrl"
+    >
+      <div class="card shadow p-4" style="width: 400px">
+        <h2 class="text-center mb-4">Login</h2>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" ng-model="email" required />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            ng-model="password"
+            required
+          />
+        </div>
+        <button
+          class="btn btn-primary w-100"
+          ng-click="customeShow()"
+          ng-disabled="!email || !password"
+        >
+          Login
+        </button>
+        <div class="alert alert-success mt-3 text-center" ng-if="isSuccess">
+          {{result}}
+        </div>
+
+        <div class="alert alert-danger mt-3 text-center" ng-if="isError">
+          {{result}}
+        </div>
+      </div>
+    </div>
+
+    <!-- Script -->
+    <!-- <script src="script.js"></script> -->
+    <script>
+      var app = angular.module("myApp", []);
+      app.controller("myCtrl", function ($scope) {
+        $scope.customeShow = function () {
+          if (
+            $scope.email === "admin@gmail.com" &&
+            $scope.password === "123456"
+          ) {
+            $scope.isSuccess = true;
+            $scope.isError = false;
+            $scope.result = "Login Successful ";
+          } else {
+            $scope.isSuccess = false;
+            $scope.isError = true;
+            $scope.result = "Invalid Email or Password ";
+          }
+        };
+      });
+    </script>
+  </body>
+</html>
