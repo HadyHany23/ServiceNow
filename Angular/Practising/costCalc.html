@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  </head>
+  <body>
+    <div ng-app="myApp" ng-controller="ctrl">
+      <input type="number" ng-model="cost" />
+      <input type="number" ng-model="qty" />
+      <p>{{cost*qty}}</p>
+    </div>
+    <script>
+      var app = angular.module("myApp", []);
+      app.controller("ctrl", function ($scope) {
+        $scope.cost = 0;
+        $scope.qty = 0;
+      });
+    </script>
+  </body>
+</html>

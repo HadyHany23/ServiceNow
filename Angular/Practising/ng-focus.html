@@ -1,0 +1,27 @@
+<!doctype html>
+<html ng-app="myApp">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  </head>
+  <!-- ng-focus runs code when the input gets focus (when you click inside it). -->
+  <body ng-controller="ctrl">
+    <input
+      type="text"
+      ng-model="name"
+      ng-focus="showMessage()"
+      placeholder="Click inside me"
+    />
+
+    <p>{{message}}</p>
+
+    <script>
+      var app = angular.module("myApp", []);
+
+      app.controller("ctrl", function ($scope) {
+        $scope.showMessage = function () {
+          $scope.message = "You are typing now...";
+        };
+      });
+    </script>
+  </body>
+</html>

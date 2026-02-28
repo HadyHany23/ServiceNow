@@ -1,0 +1,25 @@
+<!doctype html>
+<html ng-app="myApp">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  </head>
+  <!-- ng-keydown runs code when a key is pressed down on the keyboard. -->
+  <body ng-controller="ctrl">
+    <input
+      type="text"
+      ng-keydown="getKey($event)"
+      placeholder="press any key"
+    />
+    <p>{{message}}</p>
+
+    <script>
+      var app = angular.module("myApp", []);
+
+      app.controller("ctrl", function ($scope) {
+        $scope.getKey = function (event) {
+          $scope.message = "Key code: " + event.keyCode;
+        };
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html ng-app="myApp">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  </head>
+  <!--  ng-blur runs a function when the input loses focus (when you click outside the input). -->
+  <body ng-controller="ctrl">
+    <input
+      type="text"
+      ng-model="name"
+      ng-blur="showMessage()"
+      placeholder="Enter your name"
+    />
+
+    <p>{{message}}</p>
+
+    <script>
+      var app = angular.module("myApp", []);
+
+      app.controller("ctrl", function ($scope) {
+        $scope.showMessage = function () {
+          $scope.message = "You left the input!";
+        };
+      });
+    </script>
+  </body>
+</html>

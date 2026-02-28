@@ -1,0 +1,27 @@
+<!doctype html>
+<html ng-app="myApp">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  </head>
+  <!-- ng-change runs a function every time the input value changes. -->
+  <body ng-controller="ctrl">
+    <input
+      type="text"
+      ng-model="name"
+      ng-change="updateMessage()"
+      placeholder="Type something"
+    />
+
+    <p>{{message}}</p>
+
+    <script>
+      var app = angular.module("myApp", []);
+
+      app.controller("ctrl", function ($scope) {
+        $scope.updateMessage = function () {
+          $scope.message = "You typed: " + $scope.name;
+        };
+      });
+    </script>
+  </body>
+</html>

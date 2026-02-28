@@ -1,0 +1,28 @@
+<!doctype html>
+<html ng-app="myApp">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  </head>
+
+  <body ng-controller="ctrl">
+    <div
+      ng-mouseenter="color='green'"
+      ng-mouseleave="color='red'"
+      ng-style="{'background': color}"
+      style="width: 150px; height: 80px"
+      ng-mouseover="showMessage()"
+    ></div>
+
+    <p>{{message}}</p>
+
+    <script>
+      var app = angular.module("myApp", []);
+
+      app.controller("ctrl", function ($scope) {
+        $scope.showMessage = function () {
+          $scope.message = "Mouse is inside the box!";
+        };
+      });
+    </script>
+  </body>
+</html>
