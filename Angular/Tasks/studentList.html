@@ -131,7 +131,7 @@
 
         // Add Student
         $scope.addStudent = function () {
-          if ($scope.studentName) {
+          if (!$scope.students.includes($scope.studentName)) {
             $scope.students.push($scope.studentName);
 
             // Clear input field
@@ -140,6 +140,8 @@
             // Reset form state
             $scope.studentForm.$setPristine();
             $scope.studentForm.$setUntouched();
+          } else {
+            alert("This name exists");
           }
         };
 
