@@ -79,7 +79,8 @@
               Name must be at least 3 characters.
             </div>
           </div>
-
+          <!-- If name exists -->
+          <div ng-if="students.includes(studentName)">Same name exists</div>
           <!-- Add Button -->
           <button
             type="button"
@@ -140,8 +141,6 @@
             // Reset form state
             $scope.studentForm.$setPristine();
             $scope.studentForm.$setUntouched();
-          } else {
-            alert("This name exists");
           }
         };
 
