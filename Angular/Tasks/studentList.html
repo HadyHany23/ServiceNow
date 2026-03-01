@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Student List App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- AngularJS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+
+      .form-container {
+        max-width: 500px;
+        margin: 60px auto;
+        padding: 30px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-custom {
+        background-color: #164863;
+        color: white;
+      }
+
+      .btn-custom:hover {
+        background-color: #12394e;
+      }
+
+      input.ng-touched.ng-invalid {
+        border: 2px solid red;
+      }
+
+      input.ng-touched.ng-valid {
+        border: 2px solid green;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" ng-app="myApp" ng-controller="myCtrl">
+      <div class="form-container">
+        <h3 class="text-center mb-4">Student List App</h3>
+
+        <form name="studentForm" novalidate>
+          <!-- Student Name Input -->
+          <div class="mb-3">
+            <label class="form-label">Student Name</label>
+            <input
+              type="text"
+              name="studentName"
+              class="form-control"
+              placeholder="Enter student name"
+              ng-model="studentName"
+              ng-minlength="3"
+              required
+            />
+          </div>
+
+          <!-- Validation Messages -->
+          <div
+            class="text-danger"
+            ng-show="studentForm.studentName.$touched && studentForm.studentName.$invalid"
+          >
+            <div ng-show="studentForm.studentName.$error.required">
+              Student name is required.
+            </div>
+
+            <div ng-show="studentForm.studentName.$error.minlength">
+              Name must be at least 3 characters.
+            </div>
+          </div>
+
+          <!-- Add Button -->
+          <button
+            type="button"
+            class="btn btn-custom w-100 mt-3"
+            ng-click="addStudent()"
+            ng-disabled="studentForm.$invalid"
+          >
+            Add Student
+          </button>
+        </form>
+      </div>
+
+      <!-- Message if No Students -->
+      <div class="text-center mt-4 text-muted" ng-if="students.length === 0">
+        No students added yet.
+      </div>
+
+      <!-- Students Table -->
+      <table class="table mt-4" ng-if="students.length > 0">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Student Name</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="student in students">
+            <td>{{$index + 1}}</td>
+            <td>{{ student }}</td>
+            <td>
+              <button
+                class="btn btn-danger btn-sm"
+                ng-click="deleteStudent($index)"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      var app = angular.module("myApp", []);
+
+      app.controller("myCtrl", function ($scope) {
+        $scope.students = [];
+
+        // Add Student
+        $scope.addStudent = function () {
+          if ($scope.studentName) {
+            $scope.students.push($scope.studentName);
+
+            // Clear input field
+            $scope.studentName = "";
+
+            // Reset form state
+            $scope.studentForm.$setPristine();
+            $scope.studentForm.$setUntouched();
+          }
+        };
+
+        // Delete Student
+        $scope.deleteStudent = function (index) {
+          $scope.students.splice(index, 1);
+        };
+      });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
