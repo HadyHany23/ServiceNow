@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Student Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- AngularJS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <style></style>
+  </head>
+
+  <body>
+    <div
+      class="container text-center mt-4"
+      ng-app="myApp"
+      ng-controller="myCtrl"
+    >
+      <div ng-if="loading" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">loading...</span>
+        </div>
+      </div>
+      <div>{{count}} Loading user...</div>
+    </div>
+
+    <script>
+      var app = angular.module("myApp", []);
+
+      app.controller("myCtrl", function ($scope, $timeout, $interval) {
+        $scope.loading = true;
+        $timeout(function () {
+          $scope.loading = false;
+        }, 5000);
+        $scope.count = 0;
+        var counter = $interval(
+          function () {
+            $scope.count++;
+          },
+          1000,
+          5,
+        );
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Student Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- AngularJS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <style></style>
+  </head>
+
+  <body>
+    <div class="container mt-4" ng-app="myApp" ng-controller="myCtrl">
+      <h2 class="mb-4 text-center">Users Table</h2>
+
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="user in users">
+            <td>{{ user.id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      var app = angular.module("myApp", []);
+
+      app.controller("myCtrl", function ($scope, $http) {
+        $scope.apiLink = "https://jsonplaceholder.typicode.com/users";
+        $scope.apiKey = "syc_827364521_demo_key_z9y8x7";
+        $scope.headers = {
+          apiKey: $scope.apiKey,
+          Authorization: "Bearer " + $scope.apiKey,
+          "Content-Type": "application/json",
+        };
+        $scope.users = [];
+        $http
+          .get($scope.apiLink, {
+            headers: $scope.headers,
+          })
+          .then(function (response) {
+            console.log(response);
+            $scope.users = response.data;
+          });
+      });
+    </script>
+  </body>
+</html>

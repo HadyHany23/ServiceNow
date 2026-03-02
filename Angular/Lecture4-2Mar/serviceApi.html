@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Student Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      .loader-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+
+  <body ng-app="myApp" ng-controller="myCtrl">
+    <div class="container mt-4">
+      <h2 class="mb-4 text-center">User Management System</h2>
+
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">Add New User</div>
+        <div class="card-body">
+          <form ng-submit="postUser()">
+            <div class="row">
+              <div class="col-md-5 mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Name"
+                  ng-model="userData.name"
+                  required
+                />
+              </div>
+              <div class="col-md-5 mb-3">
+                <input
+                  type="email"
+                  class="form-control"
+                  placeholder="Email"
+                  ng-model="userData.email"
+                  required
+                />
+              </div>
+              <div class="col-md-2 mb-3">
+                <button
+                  type="submit"
+                  class="btn btn-success w-100"
+                  ng-disabled="isSubmitting"
+                >
+                  <span
+                    ng-show="isSubmitting"
+                    class="spinner-border spinner-border-sm"
+                  ></span>
+                  {{ isSubmitting ? 'Saving...' : 'Submit' }}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="loader-container" ng-if="isLoading">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Fetching users...</p>
+      </div>
+
+      <div ng-if="!isLoading">
+        <h3 class="mb-3">Users List</h3>
+        <table class="table table-bordered table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="user in users">
+              <td>{{ user.id }}</td>
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      var app = angular.module("myApp", []);
+
+      app.controller("myCtrl", function ($scope, UserService) {
+        $scope.users = [];
+        $scope.userData = {};
+        $scope.isLoading = true;
+        $scope.isSubmitting = false;
+
+        // --- GET DATA ---
+        UserService.getUsers()
+          .then(function (response) {
+            $scope.users = response.data;
+          })
+          .finally(function () {
+            $scope.isLoading = false;
+          });
+
+        // --- POST DATA ---
+        $scope.postUser = function () {
+          $scope.isSubmitting = true;
+
+          UserService.createUser($scope.userData)
+            .then(function (response) {
+              $scope.users.push(response.data);
+
+              $scope.userData = {};
+              alert("User posted successfully!");
+            })
+            .catch(function (error) {
+              console.error("Post Error:", error);
+            })
+            .finally(function () {
+              $scope.isSubmitting = false;
+            });
+        };
+      });
+
+      app.service("UserService", function ($http) {
+        const apiLink = "https://jsonplaceholder.typicode.com/users";
+        const apiKey = "syc_827364521_demo_key_z9y8x7";
+        const config = {
+          headers: {
+            apiKey: apiKey,
+            Authorization: "Bearer " + apiKey,
+            "Content-Type": "application/json",
+          },
+        };
+        this.getUsers = function () {
+          return $http.get(apiLink, config);
+        };
+        this.createUser = function (users) {
+          return $http.post(apiLink, users, config);
+        };
+      });
+    </script>
+  </body>
+</html>
