@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Student Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- AngularJS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      .high-marks {
+        font-weight: bold;
+        color: red;
+        font-size: larger;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+      th,
+      td {
+        padding: 8px;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container mt-4" ng-app="myApp" ng-controller="myCtrl">
+      <student-list students="students"></student-list>
+    </div>
+
+    <script>
+      var app = angular.module("myApp", []);
+
+      app.controller("myCtrl", function ($scope) {
+        $scope.students = [
+          { name: "Ahmed", marks: 85 },
+          { name: "Sara", marks: 70 },
+          { name: "Mohamed", marks: 92 },
+          { name: "Mona", marks: 60 },
+          { name: "Ali", marks: 88 },
+        ];
+      });
+
+      app.filter("myFilter", function () {
+        return function (students, searchText) {
+          if (!searchText) return students;
+
+          var result = [];
+
+          for (var i = 0; i < students.length; i++) {
+            if (
+              students[i].name.toLowerCase().includes(searchText.toLowerCase())
+            ) {
+              result.push(students[i]);
+            }
+          }
+
+          return result;
+        };
+      });
+
+      app.directive("studentList", function () {
+        return {
+          scope: { students: "=" },
+          template: `
+            <div>
+
+              <!-- Search + Sort -->
+              <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <input type="text"
+                       placeholder="Search by name"
+                       ng-model="searchText"
+                       class="form-control">
+
+                <select ng-model="sortOption"
+                        ng-init="sortOption='name'"
+                        class="form-select"
+                        style="max-width:300px;">
+                  <option value="name">Sort by Name</option>
+                  <option value="-marks">Marks High to Low</option>
+                  <option value="marks">Marks Low to High</option>
+                </select>
+              </div>
+
+              <!-- Students Table -->
+              <table width="100%">
+                <thead>
+                  <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Marks</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr ng-repeat="student in students 
+                                 | myFilter:searchText
+                                 | orderBy:sortOption"
+                      >
+                    <td>{{$index + 1}}</td>
+                    <td>{{student.name}}</td>
+                    <td ng-class="{'high-marks': student.marks > 80}">{{student.marks}}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- No Result Message -->
+              <p style="color:red; margin-top:10px;"
+                 ng-if="(students | filter:{name:searchText}).length == 0">
+                 No student found
+              </p>
+
+            </div>
+          `,
+        };
+      });
+    </script>
+  </body>
+</html>
