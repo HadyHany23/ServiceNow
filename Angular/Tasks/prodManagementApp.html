@@ -23,6 +23,9 @@
         color: #dc3545;
         font-size: 0.875em;
       }
+      .error {
+        border: 1px solid red;
+      }
     </style>
   </head>
 
@@ -51,7 +54,21 @@
                   ng-model="productData.title"
                   minlength="3"
                   required
+                  ng-class="{ 'error': prodForm.title.$invalid && prodForm.title.$touched }"
                 />
+                <small
+                  class="help-block"
+                  ng-if="prodForm.title.$touched && prodForm.title.$error.required"
+                >
+                  Title is required
+                </small>
+
+                <small
+                  class="help-block"
+                  ng-if="prodForm.title.$touched && prodForm.title.$error.minlength"
+                >
+                  Minimum 3 characters required
+                </small>
               </div>
               <div class="col-md-5 mb-3">
                 <input
@@ -61,7 +78,21 @@
                   placeholder="Price or Category"
                   ng-model="productData.body"
                   required
+                  ng-class="{ 'error': prodForm.category.$invalid && prodForm.category.$touched }"
                 />
+                <small
+                  class="help-block"
+                  ng-if="prodForm.category.$touched && prodForm.category.$error.required"
+                >
+                  Category is required
+                </small>
+
+                <small
+                  class="help-block"
+                  ng-if="prodForm.category.$touched && prodForm.category.$error.minlength"
+                >
+                  Minimum 3 characters required
+                </small>
               </div>
               <div class="col-md-2 mb-3">
                 <button
@@ -115,12 +146,25 @@
               <td>{{ product.title }}</td>
               <td>{{ product.body }}</td>
               <td>
-                <button
-                  class="btn btn-sm btn-outline-secondary"
-                  ng-click="startEdit(product)"
-                >
-                  Edit
-                </button>
+                <div class="btn-group" role="group">
+                  <button
+                    class="btn btn-sm btn-outline-secondary"
+                    ng-click="startEdit(product)"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-danger"
+                    ng-click="deleteProduct(product.id)"
+                    ng-disabled="product.isDeleting"
+                  >
+                    <span
+                      ng-show="product.isDeleting"
+                      class="spinner-border spinner-border-sm"
+                    ></span>
+                    {{ product.isDeleting ? '...' : 'Delete' }}
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -157,6 +201,30 @@
           if ($scope.prodForm) {
             $scope.prodForm.$setPristine();
             $scope.prodForm.$setUntouched();
+          }
+        };
+
+        // --- DELETE FUNCTION ---
+        $scope.deleteProduct = function (id) {
+          if (confirm("Are you sure you want to delete this product?")) {
+            // Find the item locally to show a loading state on that specific row
+            var product = $scope.products.find(function (p) {
+              return p.id === id;
+            });
+            if (product) product.isDeleting = true;
+
+            ProductService.deleteProduct(id)
+              .then(function () {
+                // Remove from local list upon success
+                $scope.products = $scope.products.filter(function (p) {
+                  return p.id !== id;
+                });
+                alert("Product deleted!");
+              })
+              .catch(function () {
+                alert("Error deleting product.");
+                if (product) product.isDeleting = false;
+              });
           }
         };
 
@@ -207,6 +275,11 @@
         };
         this.updateProduct = function (id, product) {
           return $http.patch(apiLink + "/" + id, product);
+        };
+
+        // ADDED DELETE METHOD
+        this.deleteProduct = function (id) {
+          return $http.delete(apiLink + "/" + id);
         };
       });
     </script>
