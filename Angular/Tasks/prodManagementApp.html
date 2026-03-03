@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Product Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      .loader-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+
+  <body ng-app="myApp" ng-controller="myCtrl">
+    <div class="container mt-4">
+      <h2 class="mb-4 text-center">Product Inventory System</h2>
+
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-dark text-white">Add New Product</div>
+        <div class="card-body">
+          <form
+            name="prodForm"
+            ng-submit="prodForm.$valid && postProduct()"
+            novalidate
+          >
+            <div class="row">
+              <div class="col-md-5 mb-3">
+                <input
+                  type="text"
+                  name="title"
+                  class="form-control"
+                  placeholder="Product Title"
+                  ng-model="productData.title"
+                  minlength="3"
+                  required
+                />
+                <small
+                  class="help-block"
+                  ng-if="prodForm.title.$touched && prodForm.title.$error.required"
+                >
+                  Title is required
+                </small>
+
+                <small
+                  class="help-block"
+                  ng-if="prodForm.title.$touched && prodForm.title.$error.minlength"
+                >
+                  Minimum 3 characters required
+                </small>
+              </div>
+              <div class="col-md-5 mb-3">
+                <input
+                  type="text"
+                  name="category"
+                  class="form-control"
+                  placeholder="Price or Category"
+                  ng-model="productData.body"
+                  required
+                />
+                <small
+                  class="help-block"
+                  ng-if="prodForm.category.$touched && prodForm.category.$error.required"
+                >
+                  Category is required
+                </small>
+
+                <small
+                  class="help-block"
+                  ng-if="prodForm.category.$touched && prodForm.category.$error.minlength"
+                >
+                  Minimum 3 characters required
+                </small>
+              </div>
+              <div class="col-md-2 mb-3">
+                <button
+                  type="submit"
+                  class="btn btn-primary w-100"
+                  ng-disabled="isSubmitting || prodForm.$invalid "
+                >
+                  <span
+                    ng-show="isSubmitting"
+                    class="spinner-border spinner-border-sm"
+                  ></span>
+                  {{ isSubmitting ? 'Saving...' : 'Add Product' }}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="loader-container" ng-if="isLoading">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Loading Products...</p>
+      </div>
+
+      <div ng-if="!isLoading">
+        <h3 class="mb-3">Products List</h3>
+        <table class="table table-bordered table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Product Name</th>
+              <th>Description/Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="product in products">
+              <td>{{ product.id }}</td>
+              <td>{{ product.title }}</td>
+              <td>{{ product.body }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      var app = angular.module("myApp", []);
+
+      app.controller("myCtrl", function ($scope, ProductService) {
+        $scope.products = [];
+        $scope.productData = {};
+        $scope.isLoading = true;
+        $scope.isSubmitting = false;
+
+        // --- GET PRODUCTS ---
+        ProductService.getProducts()
+          .then(function (response) {
+            $scope.products = response.data;
+          })
+          .finally(function () {
+            $scope.isLoading = false;
+          });
+
+        // --- POST PRODUCT ---
+        $scope.postProduct = function () {
+          $scope.isSubmitting = true;
+
+          ProductService.createProduct($scope.productData)
+            .then(function (response) {
+              $scope.products.push(response.data);
+              $scope.productData = {};
+              alert("Product added successfully!");
+            })
+            .catch(function (error) {
+              console.error("Post Error:", error);
+            })
+            .finally(function () {
+              $scope.isSubmitting = false;
+            });
+        };
+      });
+
+      app.service("ProductService", function ($http) {
+        const apiLink = "https://jsonplaceholder.typicode.com/posts";
+        const apiKey = "syc_827364521_demo_key_z9y8x7";
+
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + apiKey,
+          },
+        };
+
+        this.getProducts = function () {
+          return $http.get(apiLink, config);
+        };
+
+        this.createProduct = function (product) {
+          return $http.post(apiLink, product, config);
+        };
+      });
+    </script>
+  </body>
+</html>
