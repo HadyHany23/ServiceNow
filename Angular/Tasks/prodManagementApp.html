@@ -4,20 +4,24 @@
     <meta charset="UTF-8" />
     <title>Product Management</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
-
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-
     <style>
       .loader-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         margin: 20px 0;
+      }
+      .editing-row {
+        background-color: #fff3cd !important;
+      }
+      .help-block {
+        color: #dc3545;
+        font-size: 0.875em;
       }
     </style>
   </head>
@@ -27,11 +31,14 @@
       <h2 class="mb-4 text-center">Product Inventory System</h2>
 
       <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-dark text-white">Add New Product</div>
+        <div class="card-header bg-dark text-white">
+          <span ng-if="isEditing">Edit Product (ID: {{productData.id}})</span>
+          <span ng-if="!isEditing">Add New Product</span>
+        </div>
         <div class="card-body">
           <form
             name="prodForm"
-            ng-submit="prodForm.$valid && postProduct()"
+            ng-submit="prodForm.$valid && saveProduct()"
             novalidate
           >
             <div class="row">
@@ -45,19 +52,6 @@
                   minlength="3"
                   required
                 />
-                <small
-                  class="help-block"
-                  ng-if="prodForm.title.$touched && prodForm.title.$error.required"
-                >
-                  Title is required
-                </small>
-
-                <small
-                  class="help-block"
-                  ng-if="prodForm.title.$touched && prodForm.title.$error.minlength"
-                >
-                  Minimum 3 characters required
-                </small>
               </div>
               <div class="col-md-5 mb-3">
                 <input
@@ -68,31 +62,28 @@
                   ng-model="productData.body"
                   required
                 />
-                <small
-                  class="help-block"
-                  ng-if="prodForm.category.$touched && prodForm.category.$error.required"
-                >
-                  Category is required
-                </small>
-
-                <small
-                  class="help-block"
-                  ng-if="prodForm.category.$touched && prodForm.category.$error.minlength"
-                >
-                  Minimum 3 characters required
-                </small>
               </div>
               <div class="col-md-2 mb-3">
                 <button
                   type="submit"
-                  class="btn btn-primary w-100"
-                  ng-disabled="isSubmitting || prodForm.$invalid "
+                  class="btn w-100"
+                  ng-class="isEditing ? 'btn-warning' : 'btn-primary'"
+                  ng-disabled="isSubmitting || prodForm.$invalid"
                 >
                   <span
                     ng-show="isSubmitting"
                     class="spinner-border spinner-border-sm"
                   ></span>
-                  {{ isSubmitting ? 'Saving...' : 'Add Product' }}
+                  {{ isSubmitting ? 'Wait...' : (isEditing ? 'Update' : 'Add')
+                  }}
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-danger btn-sm w-100 mt-1"
+                  ng-if="isEditing"
+                  ng-click="cancelEdit()"
+                >
+                  Cancel
                 </button>
               </div>
             </div>
@@ -106,20 +97,31 @@
       </div>
 
       <div ng-if="!isLoading">
-        <h3 class="mb-3">Products List</h3>
         <table class="table table-bordered table-striped">
           <thead class="table-dark">
             <tr>
               <th>ID</th>
               <th>Product Name</th>
               <th>Description/Price</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="product in products">
+            <tr
+              ng-repeat="product in products"
+              ng-class="{'editing-row': product.id === productData.id}"
+            >
               <td>{{ product.id }}</td>
               <td>{{ product.title }}</td>
               <td>{{ product.body }}</td>
+              <td>
+                <button
+                  class="btn btn-sm btn-outline-secondary"
+                  ng-click="startEdit(product)"
+                >
+                  Edit
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -134,8 +136,8 @@
         $scope.productData = {};
         $scope.isLoading = true;
         $scope.isSubmitting = false;
+        $scope.isEditing = false;
 
-        // --- GET PRODUCTS ---
         ProductService.getProducts()
           .then(function (response) {
             $scope.products = response.data;
@@ -144,42 +146,67 @@
             $scope.isLoading = false;
           });
 
-        // --- POST PRODUCT ---
-        $scope.postProduct = function () {
-          $scope.isSubmitting = true;
+        $scope.startEdit = function (product) {
+          $scope.isEditing = true;
+          $scope.productData = angular.copy(product);
+        };
 
-          ProductService.createProduct($scope.productData)
-            .then(function (response) {
-              $scope.products.push(response.data);
-              $scope.productData = {};
-              alert("Product added successfully!");
-            })
-            .catch(function (error) {
-              console.error("Post Error:", error);
-            })
-            .finally(function () {
-              $scope.isSubmitting = false;
-            });
+        $scope.cancelEdit = function () {
+          $scope.isEditing = false;
+          $scope.productData = {};
+          if ($scope.prodForm) {
+            $scope.prodForm.$setPristine();
+            $scope.prodForm.$setUntouched();
+          }
+        };
+
+        $scope.saveProduct = function () {
+          $scope.isSubmitting = true;
+          if ($scope.isEditing) {
+            ProductService.updateProduct(
+              $scope.productData.id,
+              $scope.productData,
+            )
+              .then(function (response) {
+                var idToFind = $scope.productData.id;
+                for (var i = 0; i < $scope.products.length; i++) {
+                  if ($scope.products[i].id === idToFind) {
+                    $scope.products[i] = response.data;
+                    break;
+                  }
+                }
+                $scope.cancelEdit();
+                alert("Product updated!");
+              })
+              .finally(function () {
+                $scope.isSubmitting = false;
+              });
+          } else {
+            ProductService.createProduct($scope.productData)
+              .then(function (response) {
+                $scope.products.unshift(response.data);
+                $scope.productData = {};
+                $scope.prodForm.$setPristine();
+                $scope.prodForm.$setUntouched();
+                alert("Product added!");
+              })
+              .finally(function () {
+                $scope.isSubmitting = false;
+              });
+          }
         };
       });
 
       app.service("ProductService", function ($http) {
-        const apiLink = "https://jsonplaceholder.typicode.com/posts";
-        const apiKey = "syc_827364521_demo_key_z9y8x7";
-
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + apiKey,
-          },
-        };
-
+        var apiLink = "https://jsonplaceholder.typicode.com/posts";
         this.getProducts = function () {
-          return $http.get(apiLink, config);
+          return $http.get(apiLink);
         };
-
         this.createProduct = function (product) {
-          return $http.post(apiLink, product, config);
+          return $http.post(apiLink, product);
+        };
+        this.updateProduct = function (id, product) {
+          return $http.patch(apiLink + "/" + id, product);
         };
       });
     </script>
