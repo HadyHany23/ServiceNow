@@ -6,7 +6,7 @@
       <strong>{{ isEdit ? 'Edit Medicine' : 'Add New Medicine' }}</strong>
     </div>
 
-    <div class="panel-body">
+    <div class="panel-body" ng-if="getUserRole() === 'admin'">
       <form
         name="medForm"
         ng-submit="medForm.$valid && saveMedicine()"
@@ -159,7 +159,16 @@
           <th>Expiry Date</th>
           <th>Price</th>
           <th>Stock</th>
-          <th width="150" class="text-right">Actions</th>
+          <th width="150" class="text-right" ng-if="getUserRole() === 'admin'">
+            Actions
+          </th>
+          <th
+            width="150"
+            class="text-right"
+            ng-if="getUserRole() === 'cashier'"
+          >
+            Order
+          </th>
         </tr>
       </thead>
 
@@ -190,7 +199,13 @@
             </span>
           </td>
 
-          <td class="text-right">
+          <td class="text-right" ng-if="getUserRole() === 'cashier'">
+            <button class="btn btn-warning btn-xs" ng-click="addToCart(med)">
+              Add to Cart
+            </button>
+          </td>
+
+          <td class="text-right" ng-if="getUserRole() === 'admin'">
             <button class="btn btn-warning btn-xs" ng-click="editMedicine(med)">
               Edit
             </button>
