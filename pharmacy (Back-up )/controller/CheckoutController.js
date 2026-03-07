@@ -3,13 +3,24 @@ app.controller(
   function ($scope, $location, CartService, $http, SB_CONFIG) {
     $scope.cart = CartService.getCart();
     $scope.totalAmount = CartService.getTotal();
-    $scope.customer = { name: "", phone: "" };
+    $scope.customer = { name: "", phone: "", email: "", address: "" };
     $scope.customerFound = false;
     $scope.processing = false;
 
     const HEADERS = { headers: SB_CONFIG.HEADERS() };
 
-    // 1. Find Customer by Phone
+    const toast = (title, icon = "success") => {
+      Swal.fire({
+        title: title,
+        icon: icon,
+        timer: 2000,
+        showConfirmButton: false,
+        toast: true,
+        position: "top-end",
+      });
+    };
+
+    // 1. Find Customer
     $scope.findCustomer = function () {
       if (!$scope.customer.phone) return;
 
@@ -22,37 +33,101 @@ app.controller(
           if (res.data.length > 0) {
             $scope.customer = res.data[0];
             $scope.customerFound = true;
+
+            // Flags for locking fields that already have data
+            $scope.canEditName = !$scope.customer.name;
+            $scope.canEditEmail = !$scope.customer.email;
+            $scope.canEditAddress = !$scope.customer.address;
+
+            toast("Customer Found: " + $scope.customer.name);
           } else {
-            alert("New customer detected. Please enter their name.");
             $scope.customerFound = false;
+            const phone = $scope.customer.phone;
+            $scope.customer = {
+              name: "",
+              phone: phone,
+              email: "",
+              address: "",
+            };
+            $scope.canEditName =
+              $scope.canEditEmail =
+              $scope.canEditAddress =
+                true;
+            Swal.fire("New Customer", "Please enter details.", "info");
           }
         });
     };
 
-    // 2. The Process Order Transaction
+    // 2. Process Order
     $scope.processOrder = function () {
-      if ($scope.cart.length === 0) {
-        alert("Your cart is empty!");
-        return;
-      }
-
+      if ($scope.cart.length === 0) return;
       $scope.processing = true;
 
-      // Step A: Save or Resolve Customer
-      let customerPromise = $scope.customerFound
-        ? Promise.resolve({ data: [$scope.customer] })
-        : $http.post(SB_CONFIG.URL + "customers", $scope.customer, {
+      const customerData = {
+        name: $scope.customer.name,
+        phone: $scope.customer.phone,
+        email: $scope.customer.email || null,
+        address: $scope.customer.address || null,
+      };
+
+      // --- CRITICAL FIX: The Step A Logic ---
+      let resolveCustomer;
+
+      if ($scope.customerFound && $scope.customer.id) {
+        // If we found them, always PATCH to save any new info (like address)
+        resolveCustomer = $http.patch(
+          SB_CONFIG.URL + "customers?id=eq." + $scope.customer.id,
+          customerData,
+          {
             headers: {
               ...SB_CONFIG.HEADERS(),
               Prefer: "return=representation",
             },
+          },
+        );
+      } else {
+        // If not found via search, try to create
+        resolveCustomer = $http
+          .post(SB_CONFIG.URL + "customers", customerData, {
+            headers: {
+              ...SB_CONFIG.HEADERS(),
+              Prefer: "return=representation",
+            },
+          })
+          .catch((err) => {
+            // If 409 happens, it means they exist but we didn't have the ID.
+            // We fetch them, then PATCH the new data (address) onto them.
+            if (err.status === 409) {
+              return $http
+                .get(
+                  SB_CONFIG.URL + "customers?phone=eq." + $scope.customer.phone,
+                  HEADERS,
+                )
+                .then((res) => {
+                  const existingId = res.data[0].id;
+                  return $http.patch(
+                    SB_CONFIG.URL + "customers?id=eq." + existingId,
+                    customerData,
+                    {
+                      headers: {
+                        ...SB_CONFIG.HEADERS(),
+                        Prefer: "return=representation",
+                      },
+                    },
+                  );
+                });
+            }
+            throw err;
           });
+      }
 
-      customerPromise
+      resolveCustomer
         .then(function (custRes) {
-          const customerId = custRes.data[0].id;
+          // custRes.data could be an array (from Prefer: representation)
+          const customer = custRes.data[0] || custRes.data;
+          const customerId = customer.id;
 
-          // Step B: Create the Order
+          // STEP B: Create Order
           const orderData = {
             customer_id: customerId,
             total_price: parseFloat($scope.totalAmount),
@@ -68,7 +143,7 @@ app.controller(
         .then(function (orderRes) {
           const orderId = orderRes.data[0].id;
 
-          // Step C: Save Order Items
+          // STEP C: Save Items
           const itemsToSave = $scope.cart.map((item) => ({
             order_id: orderId,
             medicine_id: item.id,
@@ -83,36 +158,29 @@ app.controller(
           );
         })
         .then(function () {
-          // Step D: UPDATE MEDICINE STOCK
-          // We create an array of "Update" promises for every item in the cart
+          // STEP D: Update Stock
           const stockUpdates = $scope.cart.map((item) => {
-            const newStock = item.stock - item.quantity;
-
             return $http.patch(
               SB_CONFIG.URL + "medicines?id=eq." + item.id,
-              { stock: newStock },
+              { stock: item.stock - item.quantity },
               HEADERS,
             );
           });
-
-          // Wait for ALL stock updates to finish before moving on
           return Promise.all(stockUpdates);
         })
         .then(function () {
-          alert("Sale Completed & Inventory Updated!");
+          Swal.fire("Success!", "Sale Completed!", "success");
           CartService.clearCart();
           $location.path("/medicines");
         })
         .catch((err) => {
-          console.error("Transaction Error:", err);
-          alert(
-            "Checkout Failed: " +
-              (err.data ? err.data.message : "Network Error"),
-          );
+          console.error("FULL ERROR:", err);
+          let detail = err.data
+            ? err.data.message || err.data.details
+            : "Connection error";
+          Swal.fire("Error", "Transaction failed: " + detail, "error");
         })
-        .finally(() => {
-          $scope.processing = false;
-        });
+        .finally(() => ($scope.processing = false));
     };
   },
 );
