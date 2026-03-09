@@ -80,7 +80,7 @@
                 date:'mediumDate' }}
               </span>
             </td>
-            <td class="fw-semibold text-primary">{{ med.price | currency }}</td>
+            <td class="fw-semibold text-primary">{{ med.price }} EGP</td>
             <td>
               <span
                 class="badge px-3 py-2"
@@ -228,14 +228,30 @@
                       {{cat.name}}
                     </option>
                   </select>
+
                   <button
                     class="btn btn-outline-secondary"
                     type="button"
                     ng-click="addNewCategory()"
+                    title="Add New"
                   >
-                    Add Category
+                    <i class="bi bi-plus-lg"></i>
+                  </button>
+
+                  <button
+                    class="btn btn-outline-danger"
+                    type="button"
+                    title="Delete Selected Category"
+                    ng-click="removeCategory()"
+                    ng-disabled="!currentMed.category"
+                  >
+                    delete category
                   </button>
                 </div>
+
+                <small class="text-muted" ng-if="currentMed.category">
+                  Select a category above to delete it from the system.
+                </small>
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-bold">Price</label>

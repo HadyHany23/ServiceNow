@@ -1,14 +1,10 @@
 app.controller(
   "UserDetailController",
   function ($scope, $routeParams, UserService, $location) {
-    console.log("UserDetailController loaded");
-    console.log("Route params:", $routeParams);
-
     $scope.user = null;
     $scope.loading = true;
     $scope.deleteId = null;
 
-    // User form variables
     $scope.currentUser = {};
     $scope.isEdit = false;
 
@@ -20,33 +16,27 @@ app.controller(
           console.log("Response from service:", response);
           if (response.data && response.data.length > 0) {
             $scope.user = response.data[0];
-            console.log("User loaded:", $scope.user);
           } else {
-            console.log("No user found");
             $scope.user = null;
           }
         })
         .catch(function (error) {
-          console.error("Error loading user details", error);
           $scope.user = null;
         })
         .finally(function () {
           $scope.loading = false;
-          console.log("Loading finished, user:", $scope.user);
         });
     };
 
     $scope.editUser = function () {
       $scope.isEdit = true;
       $scope.currentUser = angular.copy($scope.user);
-      // Show the modal using Bootstrap's modal API
       var userModal = new bootstrap.Modal(document.getElementById("userModal"));
       userModal.show();
     };
 
     $scope.deleteUser = function () {
       $scope.deleteId = $scope.user.id;
-      // Show the modal using Bootstrap's modal API
       var deleteModal = new bootstrap.Modal(
         document.getElementById("deleteModal"),
       );
@@ -59,7 +49,6 @@ app.controller(
           .then(function () {
             $location.path("/users");
             $scope.deleteId = null;
-            // Hide the modal
             var deleteModal = bootstrap.Modal.getInstance(
               document.getElementById("deleteModal"),
             );
@@ -68,7 +57,6 @@ app.controller(
             }
           })
           .catch(function (error) {
-            console.error("Error deleting user", error);
             alert("Error deleting user. Please try again.");
           });
       }
@@ -117,8 +105,6 @@ app.controller(
       printWindow.document.close();
     };
 
-    // ================= USER FORM FUNCTIONS =================
-
     $scope.saveUser = function () {
       if ($scope.isEdit) {
         $scope.updateUser();
@@ -128,10 +114,8 @@ app.controller(
     $scope.updateUser = function () {
       UserService.updateUser($scope.currentUser.id, $scope.currentUser)
         .then(function (response) {
-          console.log("User updated successfully:", response);
           $scope.loadUser();
           $scope.resetForm();
-          // Close the modal with a timeout to ensure DOM is ready
           setTimeout(function () {
             var userModal = bootstrap.Modal.getInstance(
               document.getElementById("userModal"),
@@ -139,7 +123,6 @@ app.controller(
             if (userModal) {
               userModal.hide();
             } else {
-              // Fallback to jQuery method
               angular.element("#userModal").modal("hide");
             }
           }, 100);
