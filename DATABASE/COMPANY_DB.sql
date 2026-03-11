@@ -1,3 +1,4 @@
+
 --CREATE TABLES
 CREATE TABLE departments (
     dept_id SERIAL PRIMARY KEY,
