@@ -1,3 +1,4 @@
+
 CREATE TABLE Doctors (
     doctor_id SERIAL PRIMARY KEY,
     first_name VARCHAR(50),

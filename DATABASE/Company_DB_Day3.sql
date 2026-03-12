@@ -34,6 +34,9 @@ INSERT INTO Employee (emp_id, emp_name, salary, hire_date, dept_id) VALUES
 (106, 'Frank White', 4000, '2022-08-12', NULL),
 (107, 'Grace Kim', 6000, '2021-12-30', 5);
 
+INSERT INTO Employee (emp_id, emp_name, salary, hire_date, dept_id) VALUES
+(108, 'Ahmed Maged', 7500, '2022-01-15', NULL);
+
 -- Create Projects Table
 CREATE TABLE Project (
     project_id SERIAL PRIMARY KEY,
@@ -220,3 +223,35 @@ SELECT
     emp_name, 
     salary::INTEGER AS integer_salary
 FROM Employee;
+
+
+-- New Assignment (Lab examples)
+-- Display employee names with their department names
+select emp_name,dept_name from employee e
+left join department d on d.dept_id=e.dept_id
+-- Count employees in each department (more than 1 employee)
+select dept_name,count(emp_id)
+from department d
+left join employee e on d.dept_id=e.dept_id
+group by dept_name having count(emp_id) >1
+-- Top 3 highest paid employees with department names
+select emp_name, salary,dept_name from employee e
+inner join department d on d.dept_id=e.dept_id
+order by salary desc
+limit 3
+-- Display all departments and the employees working in them, including departments that do not have employees.
+select dept_name, emp_name from department d
+Left join employee e on d.dept_id=e.dept_id
+
+
+-- Assignment
+-- Display all employees with their department names, including employees who do not belong to any department.
+select emp_name,dept_name from employee e
+Left join department d on d.dept_id=e.dept_id
+-- Total hours worked on each project ordered by highest hours
+select project_name,hours from Project p
+Left join Works_On w on p.project_id=w.project_id
+-- Average salary per department (avg > 6000)
+select dept_name,Round(Avg(e.salary),2) from employee e
+join department d on d.dept_id=e.dept_id
+group by dept_name having Round(Avg(e.salary),2) >6000
