@@ -1,4 +1,5 @@
 
+
 -- Create Departments Table
 CREATE TABLE Department (
     dept_id SERIAL PRIMARY KEY,

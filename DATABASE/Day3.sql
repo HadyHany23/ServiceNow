@@ -45,6 +45,7 @@ INSERT INTO Employee (name, dept_id) VALUES
 UPDATE Employee
 SET salary = 5000;
 
+-- Case When
 SELECT emp_id, name, dept_id,  -- Added a comma here
 CASE 
     WHEN dept_id = 1 THEN 'HR' -- Use single quotes for text
@@ -53,14 +54,18 @@ CASE
 END AS dep_name
 FROM Employee;
 
+-- IN
 SELECT * FROM Employee WHERE dept_id IN (1,3);
+
+-- NOT IN
+SELECT * FROM Employee WHERE dept_id NOT IN (1,3);
 
 -- Between AS Text
 SELECT *
 FROM Employee
 WHERE name BETWEEN 'A' AND 'F';
 
--- Between AS Text
+-- Not Between AS Text
 SELECT *
 FROM Employee
 WHERE name NOT BETWEEN 'A' AND 'F';
@@ -68,62 +73,67 @@ WHERE name NOT BETWEEN 'A' AND 'F';
 -- Between as numeric
 SELECT
 FROM Employee
-WHERE emiT id BETWEEN 3 AND 5;
+WHERE dept_id BETWEEN 3 AND 5;
 
--- starts with
+-- LIKE :starts with (A Not a (Case-Sensetive))
 SELECT *
 FROM Employee
 WHERE name LIKE 'A%' ;
 
--- starts with (ILIKE case not sensitive) 
+-- ILIKE :starts with (ILIKE Case-Insensitive) 
 SELECT *
 FROM Employee
-WHERE name ILIKE 'a%' ;
+WHERE name ILIKE 'a%' ; -- Get all names starts with a or A
 
--- starts with
+-- LIKE :starts with
 SELECT *
 FROM Employee
 WHERE name LIKE '_a%' ; --second letter a ( _ acts as space)
 
---Contains
+--LIKE :Contains
 SELECT *
 FROM Employee
-WHERE name LIKE '%me%' ;
+WHERE name LIKE '%me%' ; -- Get all names that containes 'me'
 
--- Ends with
+-- LIKE :Ends with
 SELECT *
 FROM Employee
-WHERE name LIKE '%d';
+WHERE name LIKE '%d'; -- when % comes first thats mean this will get all names ends with d
 
--- SELECt sevral conditions
+-- AND SELECT sevral conditions
 SELECT *
 FROM Employee
 WHERE dept_id = 2
-AND name LIKE 'M%';
+AND name LIKE 'M%'; 
 
--- SELECt sevral conditions
+-- OR SELECT sevral conditions
 SELECT *
 FROM Employee
 WHERE dept_id = 2
 OR name LIKE 'M%';
 
--- IS
+-- NOT SELECT sevral conditions
+SELECT *
+FROM Employee
+WHERE NOT dept_id = 2
+
+-- IS NULL
 SELECT *
 FROM Employee
 WHERE dept_id IS NULL;
 
--- IS
+-- IS NOT NULL
 SELECT *
 FROM Employee
 WHERE dept_id IS NOT NULL;
 
 -- EXISTS
 SELECT *
-FROM Department d
+FROM Department d -- IF this Where Exists returns true the select * will works
 WHERE EXISTS(
 SELECT 1
 FROM Employee e
-WHERE dept_id = 1
+WHERE e.dept_id = 1
 );
 
 -- EXISTS
@@ -135,8 +145,8 @@ WHERE EXISTS (
     WHERE e.dept_id = d.dept_id
 );
 
--- EXISTS
-SELECT name 
+-- NOT EXISTS
+SELECT d.name 
 FROM Department d
 WHERE NOT EXISTS (
     SELECT 1 
@@ -144,7 +154,7 @@ WHERE NOT EXISTS (
 	WHERE e.dept_id = d.dept_id
 );
 
--- Grouping
+-- Combined Example
 SELECT 
     e.name AS employee_name, 
     e.dept_id, 
@@ -159,27 +169,39 @@ WHERE d.name IN ('IT', 'Finance')
 -- Similar
 SELECT name
 FROM Employee
-WHERE name SIMILAR TO '(A|M)%';
+WHERE name SIMILAR TO '(A|M)%'; -- Returns all names starts with A OR M (Case-Sensetive)
 
--- Telda Regix
+-- Telda Regix (Case-Sensetive)
 SELECT name
 FROM employee
-WHERE name ~ '^A';
+WHERE name ~ '^A'; -- Returns all names starts with A not a
 
+-- Telda (Case-INsensetive)
 SELECT name
 FROM employee
-WHERE name ~* '^a';
+WHERE name ~* '^a'; -- returns all names starts with A or a
 
+-- Telda Regix (Case-Sensetive)
 SELECT name
 FROM employee
-WHERE name ~ 'd$';
+WHERE name !~ '^A'; -- returns all names doesn't start with A
+
+-- Telda (Case-INsensetive)
+SELECT name
+FROM employee
+WHERE name !~* '^a'; -- Retruns all names doesn't starts with A or a
+
+-- Telda
+SELECT name
+FROM employee
+WHERE name ~ 'd$'; -- Returns names with names ends with d not D
 
 INSERT INTO Employee (name, dept_id) VALUES
 ('Ahmed', 1);
 
 SELECT name
 FROM employee
-WHERE name ~ '^.{5}$';
+WHERE name ~ '^.{5}$'; -- Returns with names with 5 charachters
 
 INSERT INTO Employee (name, dept_id) VALUES
 ('AAAA', 1);
@@ -200,7 +222,7 @@ WHERE name ~ '^.{e,f}$';
 
 SELECT name 
 FROM employee 
-WHERE name LIKE '_____';
+WHERE name LIKE '_____'; -- Returns names with exactly 5 characters
 
 SELECT name 
 FROM employee 
