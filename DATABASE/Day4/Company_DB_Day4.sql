@@ -252,6 +252,7 @@ Left join department d on d.dept_id=e.dept_id
 -- Total hours worked on each project ordered by highest hours
 select project_name,hours from Project p
 Left join Works_On w on p.project_id=w.project_id
+order by hours desc
 -- Average salary per department (avg > 6000)
 select dept_name,Round(Avg(e.salary),2) from employee e
 join department d on d.dept_id=e.dept_id
