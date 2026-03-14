@@ -45,17 +45,17 @@ INSERT INTO Employee (name, dept_id, salary) VALUES
 -- SELECT
 -- COALESCE
 SELECT name,
-COALESCE(salary, 0) AS salary
+COALESCE(salary, 0) AS salary -- Substitute null values with 0
 FROM Employee
 WHERE name LIKE 'Test%';
 -- COALESCE
 SELECT salary,
-COALESCE(name, 'No NAme' )
+COALESCE(name, 'No Name' )
 FROM Employee;
 -- ANY
 SELECT name, salary
 FROM Employee
-WHERE salary > ANY (ARRAY[4000, 6000, 700|0]);
+WHERE salary > ANY (ARRAY[4000, 6000, 7000]);
 -- COUNT
 SELECT COUNT(*) AS total_employees
 FROM employee;
@@ -89,7 +89,7 @@ SELECT dept_id, AVG(salary) AS avg_salary
 FROM employee
 GROUP BY dept_id;
 -- Having
-SELECT dept_id, AVG(salary)
+SELECT dept_id,round(AVG(salary),2) 
 FROM employee
 GROUP BY dept_id
 HAVING AVG(salary) > 5000;
@@ -106,6 +106,7 @@ FROM Employee
 GROUP BY dept_id
 HAVING COUNT(Distinct name)>4;
 -- Grouping sets
+select * from Employee
 SELECT 
     dept_id, 
     salary, 
@@ -174,7 +175,7 @@ COUNT (*) FILTER (WHERE dept_id = 4) AS dept4_employees,
 COUNT (*) FILTER (WHERE dept_id = 5) AS dept5_employees
 FROM employee;
 -- Concat_WS
-SELECT CONCAT_WS(' -', e.name, d.name) AS employee_department
+SELECT CONCAT_WS(' - ', e.name, d.name) AS employee_department
 FROM employee e
 JOIN department d ON e.dept_id = d.dept_id;
 -- Concat_ws (Concatunate with separator)
