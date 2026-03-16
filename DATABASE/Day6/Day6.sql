@@ -178,3 +178,18 @@ with avg_salary as (select dept_id, avg(salary) as average_salary from employee 
 top_salary as(select * from avg_salary where average_salary> 7000)
 select dept_name,average_salary from top_salary t
 join Department d on d.dept_id=t.dept_id
+
+-- TRANSACTION
+start transaction;
+insert into employee(emp_name, salary,dept_id) values
+('sandy',1000,1);
+select * from Employee
+commit;
+-- ROLLBACK
+rollback; -- Law 3amalna start transaction w ma3amalnash commit bn3mel rollback 3alashan ne2fel 2yy opened transaction
+
+-- JSON
+CREATE TABLE test_json (
+data json)
+select data->>'name' as name from public.test_json
+insert into test_json values('{"name":"sandy","age":20}')
