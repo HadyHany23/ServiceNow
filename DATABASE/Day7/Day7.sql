@@ -161,6 +161,8 @@ FOREIGN KEY (student_id) REFERENCES students(student_id),
 FOREIGN KEY (course_id) REFERENCES courses(course_id)
 );
 
+ALTER TABLE enrollments ADD COLUMN score INT;
+
 INSERT INTO students (student_name) VALUES
 ('Ali'), ('Sara'),('Omar'),('Ahmed');
 
@@ -169,6 +171,11 @@ INSERT INTO courses (course_name) VALUES
 
 INSERT INTO enrollments (student_id, course_id) VALUES
 (1,1),(1,2),(2,1),(3,3);
+
+UPDATE enrollments SET score = 75 WHERE student_id = 1 AND course_id = 1;
+UPDATE enrollments SET score = 60 WHERE student_id = 1 AND course_id = 2;
+UPDATE enrollments SET score = 75 WHERE student_id = 2 AND course_id = 1;
+UPDATE enrollments SET score = 80 WHERE student_id = 3 AND course_id = 3;
 
 CREATE TABLE parents (
 id SERIAL PRIMARY KEY,
@@ -236,5 +243,75 @@ SELECT
 FROM employee e
 JOIN Department d ON d.dept_id = e.dept_id
 GROUP BY d.dept_name; 
+
+-- Rank Students by Score Within Each Course
+select * from enrollments
+
+select s.student_name, c.course_name,e.score,
+rank() over ( partition by e.course_id order by e.score desc) as rank
+from enrollments e
+join students s on s.student_id=e.student_id
+join courses c on c.course_id=e.course_id
+
+-- PARTITIONING
+select distinct s.student_name, count(sp.parent_id) over (partition by s.student_id )
+from students s
+join student_parents sp on s.student_id=sp.student_id
+
+-- PARTITIONING
+SELECT 
+    s.student_name, 
+    COUNT(p.id) AS parent_count, 
+    ARRAY_AGG(p.name ORDER BY p.name) AS parent_names
+FROM students s
+JOIN student_parents sp ON s.student_id = sp.student_id
+JOIN parents p ON sp.parent_id = p.id
+GROUP BY s.student_id, s.student_name;
+
+-- In database courses : Get Top Student Per Course-> Returns highest scoring student per course.
+SELECT 
+    course_name, 
+    student_name, 
+    score
+FROM (
+    SELECT 
+        c.course_name, 
+        s.student_name, 
+        e.score,
+        dense_RANK() OVER (PARTITION BY c.course_id ORDER BY e.score DESC) as student_rank
+    FROM enrollments e
+    JOIN students s ON e.student_id = s.student_id
+    JOIN courses c ON e.course_id = c.course_id
+) ranked_scores
+WHERE student_rank = 1;
+
+-- In database company : Return the highest paid employee in each department.
+SELECT DISTINCT ON (d.dept_name)
+    d.dept_name, 
+    e.emp_name, 
+    e.salary
+FROM Employee e
+JOIN Department d ON e.dept_id = d.dept_id
+ORDER BY d.dept_name, e.salary DESC;
+
+-- In database company : Return the highest paid employee in each department. 
+-- (Window functions)
+SELECT 
+    dept_name, 
+    emp_name, 
+    salary
+FROM (
+    SELECT 
+        d.dept_name, 
+        e.emp_name, 
+        e.salary,
+        dense_RANK() OVER (
+            PARTITION BY d.dept_name 
+            ORDER BY e.salary DESC
+        ) as salary_rank
+    FROM Employee e
+    JOIN Department d ON e.dept_id = d.dept_id
+) AS ranked_table
+WHERE salary_rank = 1;
 
 -- 
