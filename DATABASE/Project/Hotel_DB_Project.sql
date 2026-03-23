@@ -315,3 +315,39 @@ JOIN Flight f ON fb.flight_id = f.flight_id
 WHERE u.user_id = 1 
   AND hb.status = 'confirmed' 
   AND fb.status = 'confirmed';
+
+
+-- test
+
+-- START THE CYCLE
+BEGIN;
+
+    -- 1. Create the Hotel Booking
+    -- (The Trigger will automatically calculate the total_cost as 800)
+    INSERT INTO HotelBooking (user_id, room_id, check_in, check_out, total_cost, status)
+    VALUES (1, 3, '2026-06-10', '2026-06-12', 0, 'confirmed');
+
+    -- 2. Create the Flight Booking
+    INSERT INTO FlightBooking (user_id, flight_id, seat_number, status)
+    VALUES (1, 1, '15B', 'confirmed');
+
+    -- 3. Update Seat Inventory (Safety Step)
+    UPDATE Flight 
+    SET available_seats = available_seats - 1 
+    WHERE flight_id = 1 AND available_seats > 0;
+
+    -- 4. Mark Room as Occupied (Safety Step)
+    UPDATE Room 
+    SET is_available = FALSE 
+    WHERE room_id = 3;
+
+    -- 5. Finalize Payment for the WHOLE TRIP
+    -- We assume the IDs generated were HotelBooking: 6 and FlightBooking: 6
+    INSERT INTO Payment (amount, payment_method, hotel_booking_id, flight_booking_id)
+    VALUES (1600, 'Credit Card', 6, 6);
+
+-- IF EVERYTHING IS PERFECT:
+COMMIT;
+
+-- IF THE FLIGHT WAS FULL OR CREDIT CARD FAILED:
+ROLLBACK;
