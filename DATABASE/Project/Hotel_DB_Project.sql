@@ -116,6 +116,10 @@ BEGIN
         NEW.total_cost := (SELECT price_per_night FROM Room WHERE room_id = NEW.room_id);
     END IF;
 
+	IF NEW.check_out < NEW.check_in THEN
+    RAISE EXCEPTION 'Check-out date cannot be before check-in date';
+	END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -253,3 +257,61 @@ FROM Flight f
 JOIN FlightBooking fb ON f.flight_id = fb.flight_id
 GROUP BY departure_city, arrival_city
 ORDER BY total_bookings DESC;
+
+-- 9- report unpaid hotel booking
+SELECT 
+    u.user_name, 
+    h.hotel_name, 
+    hb.total_cost, 
+    hb.status
+FROM HotelBooking hb
+JOIN Users u ON hb.user_id = u.user_id
+JOIN Room r ON hb.room_id = r.room_id
+JOIN Hotel h ON r.hotel_id = h.hotel_id
+LEFT JOIN Payment p ON hb.hotel_booking_id = p.hotel_booking_id
+WHERE p.payment_id IS NULL AND hb.status = 'confirmed';
+
+-- 10- report unpaid flight booking
+SELECT 
+    u.user_name, 
+    f.departure_city, 
+    f.arrival_city, 
+    f.flight_price
+FROM FlightBooking fb
+JOIN Users u ON fb.user_id = u.user_id
+JOIN Flight f ON fb.flight_id = f.flight_id
+LEFT JOIN Payment p ON fb.flight_booking_id = p.flight_booking_id
+WHERE p.payment_id IS NULL AND fb.status = 'confirmed';
+
+-- Search for available flights by Departure and Arrival city
+SELECT 
+    a.airline_name, 
+    f.departure_time, 
+    f.arrival_time, 
+    f.flight_price, 
+    f.available_seats
+FROM Flight f
+JOIN Airline a ON f.airline_id = a.airline_id
+WHERE f.departure_city = 'Dubai' 
+  AND f.arrival_city = 'London' 
+  AND DATE(f.departure_time) = '2026-06-02'
+  AND f.available_seats > 0;
+
+-- Total trip package
+SELECT 
+    u.user_name,
+    h.hotel_name,
+    hb.total_cost AS hotel_price,
+    f.departure_city || ' to ' || f.arrival_city AS flight_route,
+    f.flight_price AS flight_ticket,
+    -- THE CALCULATION: Hotel + Flight
+    (hb.total_cost + f.flight_price) AS total_trip_investment
+FROM Users u
+JOIN HotelBooking hb ON u.user_id = hb.user_id
+JOIN Room r ON hb.room_id = r.room_id
+JOIN Hotel h ON r.hotel_id = h.hotel_id
+JOIN FlightBooking fb ON u.user_id = fb.user_id
+JOIN Flight f ON fb.flight_id = f.flight_id
+WHERE u.user_id = 1 
+  AND hb.status = 'confirmed' 
+  AND fb.status = 'confirmed';
