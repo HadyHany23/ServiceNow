@@ -1,0 +1,83 @@
+Hotel Reservation & Flight Booking System Requirements
+1. User Management
+The system must allow users to register and log in.
+The system must store user details (name, email, phone, password).
+The system must support different roles (customer, admin).
+
+2. Hotel Management
+The system must store hotel information (name, location, rating, description).
+Each hotel must have multiple rooms.
+Each room must include details (type, price, availability).
+
+3. Hotel Booking
+Users must be able to search for hotels by location.
+Users must be able to view available rooms.
+Users must be able to book rooms by selecting:
+Check-in date
+Check-out date
+The system must calculate total cost.
+The system must track booking status (confirmed, cancelled).
+
+4. Flight Management
+The system must store airline information.
+The system must store flight details:
+Departure city
+Arrival city
+Departure and arrival time
+Price
+Available seats
+
+5. Flight Booking
+Users must be able to search for flights.
+Users must be able to book flights.
+The system must assign or store seat numbers.
+The system must track booking status.
+
+6. Payment System
+Users must be able to make payments for bookings.
+The system must store:
+Payment amount
+Payment method
+Payment date
+Each payment must be linked to a booking.
+
+7. Reviews & Ratings 
+Users can rate hotels.
+Users can leave comments.
+The system must store ratings and reviews.
+
+8. General System Requirements
+The system must ensure data consistency and integrity.
+The system must allow multiple bookings per user.
+The system must prevent double booking of rooms or seats.
+The system must maintain booking history.
+
+=================Requirement================
+Database Project Instructions
+Hotel Reservation & Flight Booking System
+==>ERD Requirement
+Students must design and submit a complete ER Diagram (ERD).
+The ERD must clearly show:
+-Entities (tables)
+-Relationships (1:M, M:M)
+-Primary Keys (PK)
+-Foreign Keys (FK)
+The ERD must match the implemented database schema.
+
+==>SQL Queries Requirement
+Students must write at least 10 SQL queries.
+Queries must represent real-world use cases (reports), not simple queries.
+
+==>Query Rules
+Each query must:
+-Have a clear purpose (business question)
+-Return meaningful and useful data
+-Be well-formatted and readable
+-Use SQL concepts studied in the course (JOIN, GROUP BY, etc.)
+
+==>Reporting Mindset:
+Your queries must act as reports, not just data retrieval.
+Each query should help:
+-Managers take decisions(e.g., best hotels, highest revenue, most booked flights)
+-Users understand data(e.g., available rooms, cheapest flights)
+-System generate insights(e.g., booking trends, top customers)
