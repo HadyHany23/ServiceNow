@@ -283,7 +283,7 @@ JOIN Flight f ON fb.flight_id = f.flight_id
 LEFT JOIN Payment p ON fb.flight_booking_id = p.flight_booking_id
 WHERE p.payment_id IS NULL AND fb.status = 'confirmed';
 
--- Search for available flights by Departure and Arrival city
+-- 11- Search for available flights by Departure and Arrival city
 SELECT 
     a.airline_name, 
     f.departure_time, 
@@ -293,29 +293,20 @@ SELECT
 FROM Flight f
 JOIN Airline a ON f.airline_id = a.airline_id
 WHERE f.departure_city = 'Dubai' 
-  AND f.arrival_city = 'London' 
-  AND DATE(f.departure_time) = '2026-06-02'
+  AND f.arrival_city = 'Tokyo' 
+  AND f.departure_time BETWEEN '2026-06-01 00:00:00' AND '2026-06-06 23:59:59'
   AND f.available_seats > 0;
 
--- Total trip package
+-- 12- Select hotels with all available rooms
 SELECT 
-    u.user_name,
-    h.hotel_name,
-    hb.total_cost AS hotel_price,
-    f.departure_city || ' to ' || f.arrival_city AS flight_route,
-    f.flight_price AS flight_ticket,
-    -- THE CALCULATION: Hotel + Flight
-    (hb.total_cost + f.flight_price) AS total_trip_investment
-FROM Users u
-JOIN HotelBooking hb ON u.user_id = hb.user_id
-JOIN Room r ON hb.room_id = r.room_id
-JOIN Hotel h ON r.hotel_id = h.hotel_id
-JOIN FlightBooking fb ON u.user_id = fb.user_id
-JOIN Flight f ON fb.flight_id = f.flight_id
-WHERE u.user_id = 1 
-  AND hb.status = 'confirmed' 
-  AND fb.status = 'confirmed';
-
+    h.hotel_name, 
+    h.hotel_location, 
+    r.room_type, 
+    r.price_per_night, 
+    r.is_available
+FROM Hotel h
+JOIN Room r ON h.hotel_id = r.hotel_id
+ORDER BY h.hotel_name, r.price_per_night DESC;
 
 -- test
 
@@ -325,7 +316,7 @@ BEGIN;
     -- 1. Create the Hotel Booking
     -- (The Trigger will automatically calculate the total_cost as 800)
     INSERT INTO HotelBooking (user_id, room_id, check_in, check_out, total_cost, status)
-    VALUES (1, 3, '2026-06-10', '2026-06-12', 0, 'confirmed');
+    VALUES (3, 3, '2026-06-10', '2026-06-12', 0, 'confirmed');
 
     -- 2. Create the Flight Booking
     INSERT INTO FlightBooking (user_id, flight_id, seat_number, status)
