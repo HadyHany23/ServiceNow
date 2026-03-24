@@ -25,7 +25,7 @@ Select * From Hotel
 -- 3. Room Management (Linked to Hotels)
 CREATE TABLE Room (
     room_id SERIAL PRIMARY KEY,
-    hotel_id INT REFERENCES Hotel(hotel_id),
+    hotel_id INT REFERENCES Hotel(hotel_id) ON DELETE CASCADE,
     room_type VARCHAR(50) NOT NULL,
     price_per_night INT NOT NULL,
     is_available BOOLEAN DEFAULT TRUE
@@ -44,7 +44,7 @@ Select * From Airline
 -- 5. Flight Management (Linked to Airlines)
 CREATE TABLE Flight (
     flight_id SERIAL PRIMARY KEY,
-    airline_id INT REFERENCES Airline(airline_id),
+    airline_id INT REFERENCES Airline(airline_id) ON DELETE CASCADE,
     departure_city VARCHAR(100) NOT NULL,
     arrival_city VARCHAR(100) NOT NULL,
     departure_time TIMESTAMP NOT NULL,
@@ -58,8 +58,8 @@ Select * From Flight
 -- 6. Hotel Booking (Updated ID name)
 CREATE TABLE HotelBooking (
     hotel_booking_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(user_id),
-    room_id INT REFERENCES Room(room_id),
+    user_id INT REFERENCES Users(user_id) ON DELETE CASCADE,
+    room_id INT REFERENCES Room(room_id) ON DELETE CASCADE,
     check_in DATE NOT NULL,
     check_out DATE NOT NULL,
     total_cost INT NOT NULL,
@@ -71,8 +71,8 @@ Select * From HotelBooking
 -- 7. Flight Booking (Updated ID name)
 CREATE TABLE FlightBooking (
     flight_booking_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(user_id),
-    flight_id INT REFERENCES Flight(flight_id),
+    user_id INT REFERENCES Users(user_id) ON DELETE CASCADE,
+    flight_id INT REFERENCES Flight(flight_id) ON DELETE CASCADE,
     seat_number VARCHAR(10),
     status VARCHAR(20) DEFAULT 'confirmed' CHECK (status IN ('confirmed', 'cancelled'))
 );
@@ -85,8 +85,8 @@ CREATE TABLE Payment (
     amount INT NOT NULL,
     payment_method VARCHAR(50),
     payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    hotel_booking_id INT REFERENCES HotelBooking(hotel_booking_id),
-    flight_booking_id INT REFERENCES FlightBooking(flight_booking_id)
+    hotel_booking_id INT REFERENCES HotelBooking(hotel_booking_id) ON DELETE CASCADE,
+    flight_booking_id INT REFERENCES FlightBooking(flight_booking_id) ON DELETE CASCADE
 );
 
 Select * From Payment
@@ -94,8 +94,8 @@ Select * From Payment
 -- 9. Reviews & Ratings
 CREATE TABLE Review (
     review_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(user_id),
-    hotel_id INT REFERENCES Hotel(hotel_id),
+    user_id INT REFERENCES Users(user_id) ON DELETE CASCADE,
+    hotel_id INT REFERENCES Hotel(hotel_id) ON DELETE CASCADE,
     rating INT CHECK (rating BETWEEN 1 AND 5),
     comment TEXT,
     review_date DATE DEFAULT CURRENT_DATE
