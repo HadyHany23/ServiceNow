@@ -1,0 +1,54 @@
+1. Entity Definitions (The Tables)
+Your system is built on 9 core entities, categorized into three functional modules:
+
+A. Identity & Social Module
+Users: The central entity. It stores credentials and roles (customer vs admin) for everyone interacting with the platform.
+
+Review: A feedback entity that links a User to a Hotel, allowing for quality tracking via ratings (1–5) and comments.
+
+B. Accommodation Module
+Hotel: Stores the physical locations and general descriptions of the properties.
+
+Room: A sub-entity of Hotel. It defines the specific inventory (type and price) available at each location.
+
+C. Transportation Module
+Airline: A simple lookup table to categorize flights by brand.
+
+Flight: Stores the logistics of travel, including routes, timestamps, and pricing.
+
+D. Transactional Module
+HotelBooking & FlightBooking: These are "Action" tables. They record the specific instance of a user reserving a resource.
+
+Payment: The financial ledger. It is unique because it can link to a hotel booking, a flight booking, or both (representing a full travel package).
+
+2. Relationships (The Connections)
+Your database uses a Relational Schema where data is connected via Primary Keys (PK) and Foreign Keys (FK).
+
+One-to-Many (1:M) Relationships
+Hotel → Room: One hotel has many rooms, but a room belongs to only one hotel.
+
+Airline → Flight: One airline operates many flights.
+
+Users → Bookings: One user can make many different hotel and flight reservations over time.
+
+Hotel/Flight → Bookings: A specific flight or room type can be associated with many different booking records across different dates.
+
+One-to-One (1:1) / Optional Relationships
+Bookings → Payment: While your schema allows a Payment to reference both types of bookings, logically, one specific successful payment record typically settles one specific booking "event."
+
+Many-to-Many (M:M) Logic
+Users and Hotels: Linked through the Review and HotelBooking tables. A user can stay at many hotels, and a hotel can host many users.
+
+3. Business Logic & Constraints
+To ensure the data stays clean, the following rules are implemented:
+
+Referential Integrity: Using REFERENCES ensures you cannot delete a Hotel if there are still Rooms assigned to it, preventing "broken" data.
+
+Domain Integrity: The CHECK constraints on user_role, hotel_rating, and status prevent invalid data (like a 10-star rating) from entering the system.
+
+Automation: The HotelBooking table features a Trigger, which means the "System" is responsible for the math (total_cost), not the user.
+
+Transaction Safety: By using BEGIN and COMMIT during the booking cycle, the system ensures that if a payment fails, the room and flight are not accidentally reserved.
+
+4. ERD Summary for Managers
+In short, this ERD represents a High-Availability Travel Hub. It is designed to scale; you could easily add a CarRental table or a Tours table following the same logic used for Hotels and Flights.
