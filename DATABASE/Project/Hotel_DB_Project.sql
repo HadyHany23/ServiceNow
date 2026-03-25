@@ -174,7 +174,7 @@ LEFT JOIN Payment p ON fb.flight_booking_id = p.flight_booking_id
 GROUP BY fb.flight_booking_id, u.user_name, f.flight_price, fb.status;
 
 -- =================================================================================
--- 5. CONSOLIDATED INSERTS (Run all at once)
+-- 5. INSERTS
 -- =================================================================================
 
 INSERT INTO Users (user_name, user_email, user_phone, user_password, user_role) VALUES 
@@ -219,7 +219,6 @@ INSERT INTO Flight (airline_id, departure_city, arrival_city, departure_time, ar
 (2, 'London', 'Paris', '2026-07-01 10:00', '2026-07-01 11:30', 200, 40),
 (4, 'Dubai', 'Cairo', '2026-08-01 12:00', '2026-08-01 16:00', 400, 90);
 
--- Booking Ahmed (ID 1), Sara (ID 2), Kenji (ID 3), Maria (ID 4), Sam (ID 5)
 INSERT INTO HotelBooking (user_id, room_id, check_in, check_out, total_cost, status) VALUES 
 (1, 1, '2026-06-01', '2026-06-03', 0, 'booked'),
 (2, 2, '2026-06-10', '2026-06-12', 0, 'booked'),
@@ -234,15 +233,15 @@ INSERT INTO FlightBooking (user_id, flight_id, seat_number, status) VALUES
 (4, 4, '01B', 'booked'), 
 (5, 5, '14D', 'booked');
 
--- Payments (Multi-stage test)
+
 INSERT INTO Payment (amount, payment_method, hotel_booking_id) VALUES 
-(2000, 'Cash', 1), (2000, 'Credit Card', 1), -- Ahmed fully paid $4000
-(100, 'PayPal', 2),                          -- Sara partial paid $100 of $800
-(100, 'Debit Card', 3),                       -- Kenji fully paid $100
-(450, 'Cash', 4), (450, 'Credit Card', 4);    -- Maria fully paid $900
+(2000, 'Cash', 1), (2000, 'Credit Card', 1), 
+(100, 'PayPal', 2),                          
+(100, 'Debit Card', 3),                      
+(450, 'Cash', 4), (450, 'Credit Card', 4);    
 
 INSERT INTO Payment (amount, payment_method, flight_booking_id) VALUES 
-(800, 'Credit Card', 1), (1100, 'PayPal', 2); -- Ahmed & Sara fully paid flights
+(800, 'Credit Card', 1), (1100, 'PayPal', 2); 
 
 INSERT INTO Review (user_id, hotel_id, rating, comment) VALUES 
 (1, 1, 5, 'Perfect'), 
@@ -252,186 +251,138 @@ INSERT INTO Review (user_id, hotel_id, rating, comment) VALUES
 (5, 5, 2, 'Old');
 
 -- =================================================================================
--- FINAL CHECK: Run this to see who owes money!
--- =================================================================================
-SELECT * FROM BookingBalances;
-
--- =================================================================================
 -- 6. Queries & Reports
 -- =================================================================================
+-- =================================================================================
+-- Customer Queries
+-- =================================================================================
+-- 7.1.1 Hotels and Rooms List
+SELECT h.hotel_name, h.hotel_location, rt.room_type_name, rt.price_per_night, rt.total_capacity as availible_rooms
+FROM Hotel h
+JOIN RoomType rt ON h.hotel_id = rt.hotel_id;
 
--- 1. Search Available Rooms by Location
-SELECT h.hotel_name, rt.room_type_name, rt.price_per_night, r.room_number
+-- 7.1.2 Search for Hotels By location
+SELECT hotel_name, hotel_rating, hotel_description 
+FROM Hotel 
+WHERE hotel_location ILIKE '%Dubai%';
+
+-- 7.1.3 Filter by Specific Room Type
+SELECT h.hotel_name, rt.price_per_night, rt.total_capacity
+FROM RoomType rt
+JOIN Hotel h ON rt.hotel_id = h.hotel_id
+WHERE rt.room_type_name = 'Royal Suite';
+
+-- 7.1.4 Cheapest Hotel in a Specific City
+SELECT h.hotel_name, h.hotel_location, MIN(rt.price_per_night) as starting_price
 FROM Hotel h
 JOIN RoomType rt ON h.hotel_id = rt.hotel_id
-JOIN Room r ON rt.room_type_id = r.room_type_id
-WHERE h.hotel_location = 'Dubai' AND r.is_available = TRUE;
-
--- 2. Cheapest Flights Report
-SELECT a.airline_name AS Airline, f.departure_city, f.arrival_city, f.flight_price
-FROM Flight f
-JOIN Airline a ON f.airline_id = a.airline_id
-ORDER BY f.flight_price ASC
+WHERE h.hotel_location = 'Dubai'
+GROUP BY h.hotel_name, h.hotel_location
+ORDER BY starting_price ASC
 LIMIT 3;
 
--- 3. Top Revenue Hotels (Based on Confirmed Bookings)
-SELECT h.hotel_name, SUM(hb.total_cost) AS total_revenue
+-- 7.2.1 Find Available Flights by Destination
+SELECT a.airline_name, f.departure_time, f.flight_price, f.available_seats
+FROM Flight f
+JOIN Airline a ON f.airline_id = a.airline_id
+WHERE f.arrival_city = 'London' AND f.available_seats > 0;
+
+-- 7.2.2 Flights Cheaper than $500
+SELECT departure_city, arrival_city, flight_price 
+FROM Flight 
+WHERE flight_price < 500 
+ORDER BY flight_price ASC;
+
+-- 7.2.3 Search for flight by date range
+SELECT 
+    f.flight_id,
+    a.airline_name,
+    f.departure_city,
+    f.arrival_city,
+    f.departure_time,
+    f.flight_price
+FROM Flight f
+JOIN Airline a ON f.airline_id = a.airline_id
+WHERE f.departure_time BETWEEN '2026-06-01' AND '2026-06-30'
+ORDER BY f.departure_time ASC;
+
+-- Customer's Review History
+SELECT h.hotel_name, r.rating, r.comment, r.review_date
+FROM Review r
+JOIN Hotel h ON r.hotel_id = h.hotel_id
+WHERE r.user_id = 1;
+
+-- =================================================================================
+-- Admin Reports
+-- =================================================================================
+-- A.1. Total Revenue per Hotel
+SELECT h.hotel_name, SUM(p.amount) as total_earned
 FROM Hotel h
 JOIN RoomType rt ON h.hotel_id = rt.hotel_id
 JOIN Room r ON rt.room_type_id = r.room_type_id
 JOIN HotelBooking hb ON r.room_id = hb.room_id
-WHERE hb.status = 'confirmed'
-GROUP BY h.hotel_name
-ORDER BY total_revenue DESC;
-
--- 4. Flight Occupancy Rate
-SELECT f.flight_id, f.departure_city, f.arrival_city, 
-       COUNT(fb.flight_booking_id) AS tickets_sold,
-       f.available_seats AS capacity
-FROM Flight f
-LEFT JOIN FlightBooking fb ON f.flight_id = fb.flight_id AND fb.status = 'confirmed'
-GROUP BY f.flight_id, f.departure_city, f.arrival_city, f.available_seats
-ORDER BY tickets_sold DESC;
-
--- 5. Hotel Ratings Summary
-SELECT h.hotel_name, ROUND(AVG(rev.rating), 2) AS avg_user_rating, COUNT(rev.review_id) AS total_reviews
-FROM Hotel h
-LEFT JOIN Review rev ON h.hotel_id = rev.hotel_id
+JOIN Payment p ON hb.hotel_booking_id = p.hotel_booking_id
 GROUP BY h.hotel_name;
 
--- 6. Monthly Revenue Trend
+-- A.2. Low Inventory Alert (Rooms)
+SELECT hotel_name, room_type_name, total_capacity
+FROM Hotel h JOIN RoomType rt ON h.hotel_id = rt.hotel_id
+WHERE total_capacity < 10;
+
+-- A.3. Flights Report
+SELECT 
+    f.flight_id, 
+    f.arrival_city, 
+    f.available_seats,
+    (SELECT COUNT(*) FROM FlightBooking fb WHERE fb.flight_id = f.flight_id) AS seats_sold
+FROM Flight f;
+
+-- A.4. Most Popular Hotel
+SELECT h.hotel_name, COUNT(hb.hotel_booking_id) as booking_count
+FROM Hotel h
+JOIN RoomType rt ON h.hotel_id = rt.hotel_id
+JOIN Room r ON rt.room_type_id = r.room_type_id
+JOIN HotelBooking hb ON r.room_id = hb.room_id
+GROUP BY h.hotel_name
+ORDER BY booking_count DESC;
+
+-- A.5. Customers with highest spending
+SELECT user_name, SUM(Paid) as total_owed
+FROM BookingBalances
+GROUP BY user_name
+HAVING SUM(Paid) > 0
+ORDER BY total_owed DESC;
+
+-- A.6. Airline Performance Report
+SELECT a.airline_name, SUM(f.flight_price) as revenue_generated
+FROM Airline a
+JOIN Flight f ON a.airline_id = f.airline_id
+JOIN FlightBooking fb ON f.flight_id = fb.flight_id
+JOIN Payment p ON fb.flight_booking_id = p.flight_booking_id
+GROUP BY a.airline_name;
+
+-- A.7. Monthly Revenue
 SELECT TO_CHAR(payment_date, 'YYYY-MM') AS month, SUM(amount) AS monthly_income
 FROM Payment
 GROUP BY month
 ORDER BY month DESC;
 
--- 7. Booking Cancellation Analysis
-SELECT status, COUNT(*) AS count
-FROM HotelBooking
-GROUP BY status;
-
--- 8. Most Popular Travel Routes
-SELECT f.departure_city, f.arrival_city, COUNT(fb.flight_booking_id) AS total_bookings
-FROM Flight f
-JOIN FlightBooking fb ON f.flight_id = fb.flight_id
-WHERE fb.status = 'confirmed'
-GROUP BY f.departure_city, f.arrival_city
-ORDER BY total_bookings DESC;
-
--- 9. Report Unpaid Hotel Bookings
-SELECT u.user_name, h.hotel_name, hb.total_cost, hb.status
-FROM HotelBooking hb
-JOIN Users u ON hb.user_id = u.user_id
-JOIN Room r ON hb.room_id = r.room_id
-JOIN RoomType rt ON r.room_type_id = rt.room_type_id
-JOIN Hotel h ON rt.hotel_id = h.hotel_id
-LEFT JOIN Payment p ON hb.hotel_booking_id = p.hotel_booking_id
-WHERE p.payment_id IS NULL AND hb.status = 'confirmed';
-
--- 10. Report Unpaid Flight Bookings
-SELECT u.user_name, f.departure_city, f.arrival_city, f.flight_price
-FROM FlightBooking fb
-JOIN Users u ON fb.user_id = u.user_id
-JOIN Flight f ON fb.flight_id = f.flight_id
-LEFT JOIN Payment p ON fb.flight_booking_id = p.flight_booking_id
-WHERE p.payment_id IS NULL AND fb.status = 'confirmed';
-
--- 11. Search Available Flights (Time Window)
-SELECT a.airline_name, f.departure_time, f.arrival_time, f.flight_price
-FROM Flight f
-JOIN Airline a ON f.airline_id = a.airline_id
-WHERE f.departure_city = 'Dubai' 
-  AND f.arrival_city = 'Tokyo' 
-  AND f.departure_time BETWEEN '2026-06-01 00:00:00' AND '2026-06-30 23:59:59'
-  AND f.available_seats > 0;
-
--- 12. Full Hotel/Room Inventory List
-SELECT h.hotel_name, h.hotel_location, rt.room_type_name, rt.price_per_night, r.room_number, r.is_available
+-- A.8. Top Rated Hotels
+SELECT h.hotel_name, round(AVG(r.rating),0) as avg_rating
 FROM Hotel h
-JOIN RoomType rt ON h.hotel_id = rt.hotel_id
-JOIN Room r ON rt.room_type_id = r.room_type_id
-ORDER BY h.hotel_name, rt.price_per_night DESC;
+JOIN Review r ON h.hotel_id = r.hotel_id
+GROUP BY h.hotel_name
+HAVING AVG(r.rating) >= 4;
 
--- 13. Filter Hotels by Rating
-SELECT hotel_name, hotel_location, hotel_rating
-FROM Hotel
-WHERE hotel_rating >= 4
-ORDER BY hotel_rating DESC;
-
--- 14. Customer Lifetime Value (Top Spenders)
-SELECT u.user_name, SUM(p.amount) AS total_contribution
-FROM Users u
-JOIN Payment p ON (u.user_id = (SELECT user_id FROM HotelBooking WHERE hotel_booking_id = p.hotel_booking_id) 
-                OR u.user_id = (SELECT user_id FROM FlightBooking WHERE flight_booking_id = p.flight_booking_id))
-GROUP BY u.user_name
-ORDER BY total_contribution DESC;
-
--- 15. Room Type Popularity (Which category sells most?)
-SELECT rt.room_type_name, COUNT(hb.hotel_booking_id) AS total_bookings
-FROM RoomType rt
-JOIN Room r ON rt.room_type_id = r.room_type_id
-JOIN HotelBooking hb ON r.room_id = hb.room_id
-WHERE hb.status = 'confirmed'
-GROUP BY rt.room_type_name
-ORDER BY total_bookings DESC;
-
--- 16. Revenue Leakage (Value of Cancelled Bookings)
-SELECT 'Hotel' AS Type, SUM(total_cost) AS lost_revenue 
-FROM HotelBooking WHERE status = 'cancelled'
-UNION ALL
-SELECT 'Flight' AS Type, SUM(f.flight_price) 
-FROM FlightBooking fb JOIN Flight f ON fb.flight_id = f.flight_id 
-WHERE fb.status = 'cancelled';
-
--- 17. Daily Departure Schedule (Operational Report)
-SELECT departure_time::DATE AS flight_date, COUNT(*) AS flight_count
-FROM Flight
-GROUP BY flight_date
-ORDER BY flight_date;
-
--- 18. Average Length of Stay by Hotel
-SELECT h.hotel_name, ROUND(AVG(check_out - check_in), 1) AS avg_nights
-FROM Hotel h
-JOIN RoomType rt ON h.hotel_id = rt.hotel_id
-JOIN Room r ON rt.room_type_id = r.room_type_id
-JOIN HotelBooking hb ON r.room_id = hb.room_id
-WHERE hb.status = 'confirmed'
-GROUP BY h.hotel_name;
-
--- 19. Payment Method Distribution (Accounting Report)
-SELECT payment_method, COUNT(*) AS usage_count, SUM(amount) AS total_collected
-FROM Payment
+-- A.9. Payment Report (Today)
+SELECT payment_method, SUM(amount) 
+FROM Payment 
+WHERE payment_date::DATE = CURRENT_DATE
 GROUP BY payment_method;
-
--- 20. Busy Hotels (Occupancy Count)
-SELECT h.hotel_name, COUNT(r.room_id) AS total_rooms_booked
-FROM Hotel h
-JOIN RoomType rt ON h.hotel_id = rt.hotel_id
-JOIN Room r ON rt.room_type_id = r.room_type_id
-JOIN HotelBooking hb ON r.room_id = hb.room_id
-WHERE hb.status = 'confirmed'
-GROUP BY h.hotel_name;
-
--- 21. Admin Dashboard
-SELECT 
-    'Summary Report' AS Report_Type,
-    -- 1. Total Money actually collected (Confirmed)
-    SUM(CASE WHEN status = 'confirmed' THEN Paid ELSE 0 END) AS Confirmed_Revenue,
-    
-    -- 2. Total Money still owed by customers
-    SUM(Balance) AS Total_Pending_Debt,
-    
-    -- 3. Number of fully confirmed trips
-    COUNT(CASE WHEN status = 'confirmed' THEN 1 END) AS Fully_Paid_Bookings,
-    
-    -- 4. Number of people who have started paying but aren't finished
-    COUNT(CASE WHEN status = 'booked' AND Paid > 0 THEN 1 END) AS Partial_Payment_Users
-FROM BookingBalances;
 
 -- =================================================================================
 -- 7. Full Customer Experience Hotel & Flight Booking
 -- =================================================================================
-
 INSERT INTO Users (user_name, user_email, user_phone, user_password, user_role) VALUES 
 ('Hady', 'hady@gmail.com', '01116622228', 'pass8', 'customer');
 
@@ -471,7 +422,7 @@ WHERE Type = 'Flight' AND user_name = 'Hady';
 -- 5. Hotel Payment
 BEGIN;
     INSERT INTO Payment (amount, payment_method, hotel_booking_id) 
-    VALUES (2000, 'Credit Card', (SELECT hotel_booking_id FROM HotelBooking WHERE user_id = 6 ORDER BY 1 DESC LIMIT 1));
+    VALUES (4000, 'Credit Card', (SELECT hotel_booking_id FROM HotelBooking WHERE user_id = 6 ORDER BY 1 DESC LIMIT 1));
 COMMIT;
 
 -- 6. Flight Payment
@@ -504,3 +455,6 @@ BEGIN;
     UPDATE Flight SET available_seats = available_seats + 1 WHERE flight_id = 1;
     DELETE FROM FlightBooking WHERE flight_booking_id = 6 AND status = 'booked';
 COMMIT;
+
+-- 11. Full Report
+SELECT * FROM BookingBalances;
