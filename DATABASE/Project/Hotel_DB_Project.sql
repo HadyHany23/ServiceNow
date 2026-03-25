@@ -95,8 +95,6 @@ CREATE TABLE Review (
 -- =================================================================================
 -- 3. TRIGGERS & LOGIC
 -- =================================================================================
-
--- Logic for Auto-Calculating Hotel Costs
 CREATE OR REPLACE FUNCTION auto_calculate_booking_cost()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -170,6 +168,8 @@ JOIN Users u ON fb.user_id = u.user_id
 JOIN Flight f ON fb.flight_id = f.flight_id 
 LEFT JOIN Payment p ON fb.flight_booking_id = p.flight_booking_id
 GROUP BY fb.flight_booking_id, u.user_name, f.flight_price, fb.status;
+
+SELECT * FROM BookingBalances;
 
 -- =================================================================================
 -- 5. INSERTS
@@ -305,10 +305,10 @@ WHERE f.departure_time BETWEEN '2026-06-01' AND '2026-06-30'
 ORDER BY f.departure_time ASC;
 
 -- Customer's Review History
-SELECT h.hotel_name, r.rating, r.comment, r.review_date
+SELECT h.hotel_name,u.user_name, r.rating, r.comment, r.review_date
 FROM Review r
 JOIN Hotel h ON r.hotel_id = h.hotel_id
-WHERE r.user_id = 1;
+JOIN Users u ON r.user_id = u.user_id
 
 -- =================================================================================
 -- Admin Reports
