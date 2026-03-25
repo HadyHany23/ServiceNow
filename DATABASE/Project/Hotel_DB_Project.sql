@@ -1,19 +1,10 @@
 -- =================================================================================
--- 1. CLEAR DATABASE (The "Nuclear" Option)
+-- 1. CLEAN RESET
 -- =================================================================================
-DROP TABLE IF EXISTS Review CASCADE;
-DROP TABLE IF EXISTS Payment CASCADE;
-DROP TABLE IF EXISTS FlightBooking CASCADE;
-DROP TABLE IF EXISTS HotelBooking CASCADE;
-DROP TABLE IF EXISTS Flight CASCADE;
-DROP TABLE IF EXISTS Airline CASCADE;
-DROP TABLE IF EXISTS Room CASCADE;
-DROP TABLE IF EXISTS RoomType CASCADE;
-DROP TABLE IF EXISTS Hotel CASCADE;
-DROP TABLE IF EXISTS Users CASCADE;
+DROP TABLE IF EXISTS Review, Payment, FlightBooking, HotelBooking, Flight, Airline, Room, RoomType, Hotel, Users CASCADE;
 
 -- =================================================================================
--- 2. CREATE TABLES (With Updated Logic)
+-- 2. CREATE TABLES
 -- =================================================================================
 
 CREATE TABLE Users (
@@ -33,7 +24,6 @@ CREATE TABLE Hotel (
     hotel_description TEXT
 );
 
--- THE NEW ROOM TYPE TABLE
 CREATE TABLE RoomType (
     room_type_id SERIAL PRIMARY KEY,
     hotel_id INT REFERENCES Hotel(hotel_id) ON DELETE CASCADE,
@@ -42,7 +32,6 @@ CREATE TABLE RoomType (
     total_capacity INT NOT NULL
 );
 
--- THE NEW PHYSICAL ROOM TABLE
 CREATE TABLE Room (
     room_id SERIAL PRIMARY KEY,
     room_type_id INT REFERENCES RoomType(room_type_id) ON DELETE CASCADE,
@@ -74,7 +63,7 @@ CREATE TABLE HotelBooking (
     check_in DATE NOT NULL,
     check_out DATE NOT NULL,
     total_cost INT NOT NULL,
-    status VARCHAR(20) DEFAULT 'confirmed' CHECK (status IN ('confirmed', 'cancelled'))
+    status VARCHAR(20) DEFAULT 'booked' CHECK (status IN ('booked', 'confirmed', 'cancelled'))
 );
 
 CREATE TABLE FlightBooking (
@@ -82,7 +71,7 @@ CREATE TABLE FlightBooking (
     user_id INT REFERENCES Users(user_id) ON DELETE CASCADE,
     flight_id INT REFERENCES Flight(flight_id) ON DELETE CASCADE,
     seat_number VARCHAR(10),
-    status VARCHAR(20) DEFAULT 'confirmed' CHECK (status IN ('confirmed', 'cancelled'))
+    status VARCHAR(20) DEFAULT 'booked' CHECK (status IN ('booked', 'confirmed', 'cancelled'))
 );
 
 CREATE TABLE Payment (
@@ -104,130 +93,167 @@ CREATE TABLE Review (
 );
 
 -- =================================================================================
--- 3. UPDATED COST TRIGGER
+-- 3. TRIGGERS & LOGIC
 -- =================================================================================
 
+-- Logic for Auto-Calculating Hotel Costs
 CREATE OR REPLACE FUNCTION auto_calculate_booking_cost()
 RETURNS TRIGGER AS $$
 BEGIN
     NEW.total_cost := (NEW.check_out - NEW.check_in) * (
-        SELECT rt.price_per_night 
-        FROM Room r 
+        SELECT rt.price_per_night FROM Room r 
         JOIN RoomType rt ON r.room_type_id = rt.room_type_id 
         WHERE r.room_id = NEW.room_id
     );
-    
-    IF NEW.total_cost = 0 THEN
-        NEW.total_cost := (
-            SELECT rt.price_per_night 
-            FROM Room r 
-            JOIN RoomType rt ON r.room_type_id = rt.room_type_id 
-            WHERE r.room_id = NEW.room_id
-        );
+    IF NEW.total_cost <= 0 THEN
+        NEW.total_cost := (SELECT rt.price_per_night FROM Room r JOIN RoomType rt ON r.room_type_id = rt.room_type_id WHERE r.room_id = NEW.room_id);
     END IF;
-
-    IF NEW.check_out < NEW.check_in THEN
-        RAISE EXCEPTION 'Check-out date cannot be before check-in date';
-    END IF;
-
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_auto_cost
-BEFORE INSERT ON HotelBooking
-FOR EACH ROW
-EXECUTE FUNCTION auto_calculate_booking_cost();
+CREATE TRIGGER trg_auto_cost BEFORE INSERT ON HotelBooking FOR EACH ROW EXECUTE FUNCTION auto_calculate_booking_cost();
+
+-- Logic for Partial Payments and Confirmation
+CREATE OR REPLACE FUNCTION handle_payments()
+RETURNS TRIGGER AS $$
+DECLARE v_cost INT; v_paid INT;
+BEGIN
+    IF NEW.hotel_booking_id IS NOT NULL THEN
+        SELECT total_cost INTO v_cost FROM HotelBooking WHERE hotel_booking_id = NEW.hotel_booking_id;
+        SELECT SUM(amount) INTO v_paid FROM Payment WHERE hotel_booking_id = NEW.hotel_booking_id;
+        IF v_paid >= v_cost THEN UPDATE HotelBooking SET status = 'confirmed' WHERE hotel_booking_id = NEW.hotel_booking_id; END IF;
+    ELSIF NEW.flight_booking_id IS NOT NULL THEN
+        SELECT f.flight_price INTO v_cost FROM Flight f JOIN FlightBooking fb ON f.flight_id = fb.flight_id WHERE fb.flight_booking_id = NEW.flight_booking_id;
+        SELECT SUM(amount) INTO v_paid FROM Payment WHERE flight_booking_id = NEW.flight_booking_id;
+        IF v_paid >= v_cost THEN UPDATE FlightBooking SET status = 'confirmed' WHERE flight_booking_id = NEW.flight_booking_id; END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_pay AFTER INSERT ON Payment FOR EACH ROW EXECUTE FUNCTION handle_payments();
 
 -- =================================================================================
--- 4. INSERT REFRESHED DATA 
+-- 4. VIEW FOR BALANCE REPORTS
+-- =================================================================================
+CREATE OR REPLACE VIEW BookingBalances AS
+-- Part 1: Hotel Balances
+SELECT 
+    'Hotel' AS Type, 
+    hb.hotel_booking_id AS ID, 
+    u.user_name, 
+    hb.total_cost AS Cost, 
+    COALESCE(SUM(p.amount), 0) AS Paid, 
+    (hb.total_cost - COALESCE(SUM(p.amount), 0)) AS Balance, 
+    hb.status
+FROM HotelBooking hb 
+JOIN Users u ON hb.user_id = u.user_id 
+LEFT JOIN Payment p ON hb.hotel_booking_id = p.hotel_booking_id
+GROUP BY hb.hotel_booking_id, u.user_name, hb.total_cost, hb.status
+
+UNION ALL
+
+-- Part 2: Flight Balances
+SELECT 
+    'Flight' AS Type, 
+    fb.flight_booking_id AS ID, 
+    u.user_name, 
+    f.flight_price AS Cost, 
+    COALESCE(SUM(p.amount), 0) AS Paid, 
+    (f.flight_price - COALESCE(SUM(p.amount), 0)) AS Balance, 
+    fb.status
+FROM FlightBooking fb 
+JOIN Users u ON fb.user_id = u.user_id 
+JOIN Flight f ON fb.flight_id = f.flight_id 
+LEFT JOIN Payment p ON fb.flight_booking_id = p.flight_booking_id
+GROUP BY fb.flight_booking_id, u.user_name, f.flight_price, fb.status;
+
+-- =================================================================================
+-- 5. CONSOLIDATED INSERTS (Run all at once)
 -- =================================================================================
 
-TRUNCATE TABLE Review, Payment, FlightBooking, HotelBooking, Flight, Airline, Room, RoomType, Hotel, Users RESTART IDENTITY CASCADE;
-
--- 1. Users 
 INSERT INTO Users (user_name, user_email, user_phone, user_password, user_role) VALUES 
 ('Ahmed Ali', 'ahmed@gmail.com', '01116622221', 'pass1', 'customer'),
 ('Sara Smith', 'sara@yahoo.com', '01116622222', 'pass2', 'customer'),
 ('Kenji Tanaka', 'kenji@outlook.jp', '01116622223', 'pass3', 'customer'),
 ('Maria Garcia', 'maria@gmail.com', '01116622224', 'pass4', 'customer'),
-('Admin Sam', 'sam@travel.com', '01116622225', 'admin_pass', 'admin'),
-('John Doe', 'john.doe@gmail.com', '01223344556', 'pass6', 'customer'),
-('Elena Petrova', 'elena@yandex.ru', '01556677889', 'pass7', 'customer');
+('Admin Sam', 'sam@travel.com', '01116622225', 'admin_pass', 'admin');
 
--- 2. Hotels 
 INSERT INTO Hotel (hotel_name, hotel_location, hotel_rating, hotel_description) VALUES 
-('Burj Al Arab', 'Dubai', 5, 'World most luxurious hotel'),
-('The Ritz', 'London', 5, 'Classic British elegance'),
-('Ibis Styles', 'Dubai', 3, 'Modern budget stay'),
-('Park Hyatt', 'Tokyo', 5, 'Stunning city views'),
-('Hotel Gran Via', 'Madrid', 4, 'Heart of the city'),
-('Cairo Marriott', 'Cairo', 5, 'Historic palace hotel');
+('Burj Al Arab', 'Dubai', 5, 'Luxury'),
+('The Ritz', 'London', 5, 'Classic'),
+('Ibis Styles', 'Dubai', 3, 'Budget'),
+('Park Hyatt', 'Tokyo', 5, 'Views'),
+('Hotel Gran Via', 'Madrid', 4, 'Central');
 
--- 3. Room Types 
 INSERT INTO RoomType (hotel_id, room_type_name, price_per_night, total_capacity) VALUES 
-(1, 'Royal Suite', 2000, 5), (1, 'Deluxe', 800, 10),
-(2, 'Superior', 400, 15), (2, 'Standard', 250, 20),
-(3, 'Economy', 100, 30), (3, 'Studio', 180, 10),
-(4, 'Zen Suite', 900, 8), (5, 'Family Room', 350, 12),
-(6, 'Nile View', 500, 20);
+(1, 'Royal Suite', 2000, 5), 
+(2, 'Superior', 400, 10), 
+(3, 'Economy', 100, 2),
+(4, 'Zen Suite', 900, 4), 
+(5, 'Family', 350, 6);
 
--- 4. Physical Rooms
 INSERT INTO Room (room_type_id, room_number) VALUES 
-(1, '1001'), (1, '1002'), (2, '201'), (2, '202'), (2, '203'), 
-(3, '305'), (3, '306'), (4, '410'), (4, '411'),              
-(5, '501'), (5, '502'), (5, '503'), (6, '601'),          
-(7, '701'), (8, '801'), (9, '901'), (9, '902');          
+(1, '1001'), 
+(2, '201'), 
+(3, '305'), 
+(4, '701'), 
+(5, '501');
 
--- 5. Airlines
 INSERT INTO Airline (airline_name) VALUES 
-('Emirates'), ('British Airways'), ('Japan Airlines'), ('Qatar Airways'), ('EgyptAir');
+('Emirates'), 
+('British Airways'), 
+('Japan Airlines'), 
+('Qatar Airways'), 
+('EgyptAir');
 
--- 6. Flights 
 INSERT INTO Flight (airline_id, departure_city, arrival_city, departure_time, arrival_time, flight_price, available_seats) VALUES 
-(1, 'Dubai', 'London', '2026-06-01 08:00:00', '2026-06-01 13:00:00', 800, 150),
-(1, 'Dubai', 'Tokyo', '2026-06-05 22:00:00', '2026-06-06 10:00:00', 1200, 200),
-(2, 'London', 'Madrid', '2026-06-10 14:00:00', '2026-06-10 16:30:00', 150, 80),
-(3, 'Tokyo', 'Dubai', '2026-06-15 09:00:00', '2026-06-15 15:00:00', 1100, 120),
-(5, 'Cairo', 'Dubai', '2026-06-20 02:00:00', '2026-06-20 06:30:00', 350, 100),
-(4, 'Dubai', 'Cairo', '2026-06-25 10:00:00', '2026-06-25 14:00:00', 400, 50);
+(1, 'Dubai', 'London', '2026-06-01 08:00', '2026-06-01 13:00', 800, 100),
+(3, 'Tokyo', 'Dubai', '2026-06-15 09:00', '2026-06-15 15:00', 1100, 50),
+(5, 'Cairo', 'Dubai', '2026-06-20 02:00', '2026-06-20 06:00', 350, 80),
+(2, 'London', 'Paris', '2026-07-01 10:00', '2026-07-01 11:30', 200, 40),
+(4, 'Dubai', 'Cairo', '2026-08-01 12:00', '2026-08-01 16:00', 400, 90);
 
--- 7. Hotel Bookings 
+-- Booking Ahmed (ID 1), Sara (ID 2), Kenji (ID 3), Maria (ID 4), Sam (ID 5)
 INSERT INTO HotelBooking (user_id, room_id, check_in, check_out, total_cost, status) VALUES 
-(1, 1, '2026-06-01', '2026-06-03', 0, 'confirmed'),
-(2, 6, '2026-06-10', '2026-06-12', 0, 'confirmed'),
-(3, 14, '2026-06-06', '2026-06-07', 0, 'cancelled'),
-(4, 15, '2026-06-15', '2026-06-20', 0, 'confirmed'),
-(6, 16, '2026-06-21', '2026-06-23', 0, 'confirmed'),
-(7, 3, '2026-06-05', '2026-06-10', 0, 'confirmed');
+(1, 1, '2026-06-01', '2026-06-03', 0, 'booked'),
+(2, 2, '2026-06-10', '2026-06-12', 0, 'booked'),
+(3, 3, '2026-06-05', '2026-06-06', 0, 'booked'),
+(4, 4, '2026-07-15', '2026-07-16', 0, 'booked'),
+(5, 5, '2026-08-01', '2026-08-03', 0, 'booked');
 
--- 8. Flight Bookings
 INSERT INTO FlightBooking (user_id, flight_id, seat_number, status) VALUES 
-(1, 1, '12A', 'confirmed'),
-(2, 3, '05C', 'confirmed'),
-(3, 2, '22K', 'cancelled'),
-(4, 5, '01A', 'confirmed'),
-(6, 6, '14F', 'confirmed'),
-(7, 2, '10B', 'confirmed');
+(1, 1, '12A', 'booked'), 
+(2, 2, '05C', 'booked'), 
+(3, 3, '10F', 'booked'), 
+(4, 4, '01B', 'booked'), 
+(5, 5, '14D', 'booked');
 
--- 9. Payments
-INSERT INTO Payment (amount, payment_method, hotel_booking_id, flight_booking_id) VALUES 
-(4000, 'Credit Card', 1, NULL),
-(800, 'PayPal', 2, NULL),
-(800, 'Credit Card', NULL, 1),
-(150, 'Debit Card', NULL, 2),
-(350, 'Cash', NULL, 4); 
+-- Payments (Multi-stage test)
+INSERT INTO Payment (amount, payment_method, hotel_booking_id) VALUES 
+(2000, 'Cash', 1), (2000, 'Credit Card', 1), -- Ahmed fully paid $4000
+(100, 'PayPal', 2),                          -- Sara partial paid $100 of $800
+(100, 'Debit Card', 3),                       -- Kenji fully paid $100
+(450, 'Cash', 4), (450, 'Credit Card', 4);    -- Maria fully paid $900
 
--- 10. Reviews
+INSERT INTO Payment (amount, payment_method, flight_booking_id) VALUES 
+(800, 'Credit Card', 1), (1100, 'PayPal', 2); -- Ahmed & Sara fully paid flights
+
 INSERT INTO Review (user_id, hotel_id, rating, comment) VALUES 
-(1, 1, 5, 'Incredible service!'),
-(2, 2, 4, 'Very classic.'),
-(4, 5, 2, 'Too noisy.'),
-(6, 6, 5, 'Beautiful Nile view.'),
-(7, 1, 4, 'Expensive but worth it.');
+(1, 1, 5, 'Perfect'), 
+(2, 2, 4, 'Good'), 
+(4, 4, 3, 'Average'), 
+(3, 3, 5, 'Cheap!'), 
+(5, 5, 2, 'Old');
 
 -- =================================================================================
--- 5. Queries & Reports
+-- FINAL CHECK: Run this to see who owes money!
+-- =================================================================================
+SELECT * FROM BookingBalances;
+
+-- =================================================================================
+-- 6. Queries & Reports
 -- =================================================================================
 
 -- 1. Search Available Rooms by Location
@@ -382,3 +408,19 @@ JOIN HotelBooking hb ON r.room_id = hb.room_id
 WHERE hb.status = 'confirmed'
 GROUP BY h.hotel_name;
 
+--
+
+SELECT 
+    'Summary Report' AS Report_Type,
+    -- 1. Total Money actually collected (Confirmed)
+    SUM(CASE WHEN status = 'confirmed' THEN Paid ELSE 0 END) AS Confirmed_Revenue,
+    
+    -- 2. Total Money still owed by customers
+    SUM(Balance) AS Total_Pending_Debt,
+    
+    -- 3. Number of fully confirmed trips
+    COUNT(CASE WHEN status = 'confirmed' THEN 1 END) AS Fully_Paid_Bookings,
+    
+    -- 4. Number of people who have started paying but aren't finished
+    COUNT(CASE WHEN status = 'booked' AND Paid > 0 THEN 1 END) AS Partial_Payment_Users
+FROM BookingBalances;
