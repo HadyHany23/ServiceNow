@@ -112,13 +112,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- First, drop the old one-way trigger
 DROP TRIGGER IF EXISTS trg_auto_cost ON HotelBooking;
 
--- Second, create the new two-way trigger
 CREATE TRIGGER trg_auto_cost BEFORE INSERT OR UPDATE OF check_in, check_out, room_id ON HotelBooking FOR EACH ROW EXECUTE FUNCTION auto_calculate_booking_cost();
 
--- Logic for Partial Payments and Confirmation
+
 CREATE OR REPLACE FUNCTION handle_payments()
 RETURNS TRIGGER AS $$
 DECLARE v_cost INT; v_paid INT;
