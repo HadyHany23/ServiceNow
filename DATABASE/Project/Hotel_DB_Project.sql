@@ -29,7 +29,7 @@ CREATE TABLE RoomType (
     hotel_id INT REFERENCES Hotel(hotel_id) ON DELETE CASCADE,
     room_type_name VARCHAR(50) NOT NULL,
     price_per_night INT NOT NULL,
-    total_capacity INT NOT NULL
+    total_capacity INT NOT NULL CHECK (total_capacity >= 0) -- CONSTRAINT: No negative rooms
 );
 
 CREATE TABLE Room (
@@ -53,7 +53,7 @@ CREATE TABLE Flight (
     departure_time TIMESTAMP NOT NULL,
     arrival_time TIMESTAMP NOT NULL,
     flight_price INT NOT NULL,
-    available_seats INT NOT NULL
+    available_seats INT NOT NULL CHECK (available_seats >= 0) -- CONSTRAINT: No negative seats
 );
 
 CREATE TABLE HotelBooking (
@@ -112,7 +112,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_auto_cost BEFORE INSERT ON HotelBooking FOR EACH ROW EXECUTE FUNCTION auto_calculate_booking_cost();
+-- First, drop the old one-way trigger
+DROP TRIGGER IF EXISTS trg_auto_cost ON HotelBooking;
+
+-- Second, create the new two-way trigger
+CREATE TRIGGER trg_auto_cost BEFORE INSERT OR UPDATE OF check_in, check_out, room_id ON HotelBooking FOR EACH ROW EXECUTE FUNCTION auto_calculate_booking_cost();
 
 -- Logic for Partial Payments and Confirmation
 CREATE OR REPLACE FUNCTION handle_payments()
@@ -408,8 +412,7 @@ JOIN HotelBooking hb ON r.room_id = hb.room_id
 WHERE hb.status = 'confirmed'
 GROUP BY h.hotel_name;
 
---
-
+-- 21. Admin Dashboard
 SELECT 
     'Summary Report' AS Report_Type,
     -- 1. Total Money actually collected (Confirmed)
@@ -424,3 +427,80 @@ SELECT
     -- 4. Number of people who have started paying but aren't finished
     COUNT(CASE WHEN status = 'booked' AND Paid > 0 THEN 1 END) AS Partial_Payment_Users
 FROM BookingBalances;
+
+-- =================================================================================
+-- 7. Full Customer Experience Hotel & Flight Booking
+-- =================================================================================
+
+INSERT INTO Users (user_name, user_email, user_phone, user_password, user_role) VALUES 
+('Hady', 'hady@gmail.com', '01116622228', 'pass8', 'customer');
+
+Select user_id,user_name
+From Users
+Where user_password = 'pass8'
+
+-- 1. Customer Book Hotel
+BEGIN;
+    INSERT INTO HotelBooking (user_id, room_id, check_in, check_out, total_cost, status)
+    SELECT 6, 1, '2026-06-05', '2026-06-07', 0, 'booked'
+    FROM Room WHERE room_id = 1 AND is_available = TRUE;
+
+    UPDATE Room SET is_available = FALSE WHERE room_id = 1;
+    UPDATE RoomType SET total_capacity = total_capacity - 1 WHERE room_type_id = 1;
+COMMIT;
+
+-- 2. Customer Book Flight
+BEGIN;
+    INSERT INTO FlightBooking (user_id, flight_id, seat_number, status)
+    SELECT 6, 1, '15B', 'booked'
+    FROM Flight WHERE flight_id = 1 AND available_seats > 0;
+
+    UPDATE Flight SET available_seats = available_seats - 1 WHERE flight_id = 1;
+COMMIT;
+
+-- 3. Hotel Booking Details
+SELECT ID as Booking_ID, user_name, Cost, Paid, Balance, status
+FROM BookingBalances 
+WHERE Type = 'Hotel' AND user_name = 'Hady';
+
+-- 4. Flight Booking Details
+SELECT ID as Booking_ID, user_name, Cost, Paid, Balance, status
+FROM BookingBalances 
+WHERE Type = 'Flight' AND user_name = 'Hady';
+
+-- 5. Hotel Payment
+BEGIN;
+    INSERT INTO Payment (amount, payment_method, hotel_booking_id) 
+    VALUES (2000, 'Credit Card', (SELECT hotel_booking_id FROM HotelBooking WHERE user_id = 6 ORDER BY 1 DESC LIMIT 1));
+COMMIT;
+
+-- 6. Flight Payment
+BEGIN;
+    INSERT INTO Payment (amount, payment_method, flight_booking_id) 
+    VALUES (400, 'Cash', (SELECT flight_booking_id FROM FlightBooking WHERE user_id = 6 ORDER BY 1 DESC LIMIT 1));
+COMMIT;
+
+-- 7. Update Flight Seat
+UPDATE FlightBooking SET seat_number = '01A' 
+WHERE user_id = 6 AND status = 'booked';
+
+SELECT * FROM FlightBooking WHERE user_id = 6;
+
+-- 8. Update Hotel Dates
+UPDATE HotelBooking SET check_out = '2026-06-08' 
+WHERE user_id = 6 AND status = 'booked';
+
+SELECT * FROM HotelBooking WHERE user_id = 6;
+
+-- 9. Deleting Hotel Booking
+BEGIN;
+    UPDATE Room SET is_available = TRUE WHERE room_id = (SELECT room_id FROM HotelBooking WHERE hotel_booking_id = 6);
+    UPDATE RoomType SET total_capacity = total_capacity + 1 WHERE room_type_id = 1;
+    DELETE FROM HotelBooking WHERE hotel_booking_id = 6 AND status = 'booked';
+COMMIT;
+
+-- 10. Deleteing Flight Booking
+BEGIN;
+    UPDATE Flight SET available_seats = available_seats + 1 WHERE flight_id = 1;
+    DELETE FROM FlightBooking WHERE flight_booking_id = 6 AND status = 'booked';
+COMMIT;
