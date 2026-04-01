@@ -1,3 +1,4 @@
+
 -- =================================================================================
 -- 1. CLEAN RESET
 -- =================================================================================
@@ -29,7 +30,7 @@ CREATE TABLE RoomType (
     hotel_id INT REFERENCES Hotel(hotel_id) ON DELETE CASCADE,
     room_type_name VARCHAR(50) NOT NULL,
     price_per_night INT NOT NULL,
-    total_capacity INT NOT NULL CHECK (total_capacity >= 0) -- CONSTRAINT: No negative rooms
+    total_capacity INT NOT NULL CHECK (total_capacity >= 0) 
 );
 
 CREATE TABLE Room (
@@ -53,7 +54,7 @@ CREATE TABLE Flight (
     departure_time TIMESTAMP NOT NULL,
     arrival_time TIMESTAMP NOT NULL,
     flight_price INT NOT NULL,
-    available_seats INT NOT NULL CHECK (available_seats >= 0) -- CONSTRAINT: No negative seats
+    available_seats INT NOT NULL CHECK (available_seats >= 0) 
 );
 
 CREATE TABLE HotelBooking (
@@ -137,11 +138,13 @@ CREATE TRIGGER trg_pay AFTER INSERT ON Payment FOR EACH ROW EXECUTE FUNCTION han
 -- =================================================================================
 -- 4. VIEW FOR BALANCE REPORTS
 -- =================================================================================
+DROP VIEW IF EXISTS BookingBalances;
 CREATE OR REPLACE VIEW BookingBalances AS
 -- Part 1: Hotel Balances
 SELECT 
     'Hotel' AS Type, 
     hb.hotel_booking_id AS ID, 
+    u.user_id,             
     u.user_name, 
     hb.total_cost AS Cost, 
     COALESCE(SUM(p.amount), 0) AS Paid, 
@@ -150,7 +153,7 @@ SELECT
 FROM HotelBooking hb 
 JOIN Users u ON hb.user_id = u.user_id 
 LEFT JOIN Payment p ON hb.hotel_booking_id = p.hotel_booking_id
-GROUP BY hb.hotel_booking_id, u.user_name, hb.total_cost, hb.status
+GROUP BY hb.hotel_booking_id, u.user_id, u.user_name, hb.total_cost, hb.status
 
 UNION ALL
 
@@ -158,6 +161,7 @@ UNION ALL
 SELECT 
     'Flight' AS Type, 
     fb.flight_booking_id AS ID, 
+    u.user_id,            
     u.user_name, 
     f.flight_price AS Cost, 
     COALESCE(SUM(p.amount), 0) AS Paid, 
@@ -167,7 +171,7 @@ FROM FlightBooking fb
 JOIN Users u ON fb.user_id = u.user_id 
 JOIN Flight f ON fb.flight_id = f.flight_id 
 LEFT JOIN Payment p ON fb.flight_booking_id = p.flight_booking_id
-GROUP BY fb.flight_booking_id, u.user_name, f.flight_price, fb.status;
+GROUP BY fb.flight_booking_id, u.user_id, u.user_name, f.flight_price, fb.status;
 
 SELECT * FROM BookingBalances;
 
@@ -314,13 +318,14 @@ JOIN Users u ON r.user_id = u.user_id
 -- Admin Reports
 -- =================================================================================
 -- A.1. Total Revenue per Hotel
-SELECT h.hotel_name, SUM(p.amount) as total_earned
+SELECT h.hotel_name, SUM(p.amount) as total_earned , h.hotel_location
 FROM Hotel h
 JOIN RoomType rt ON h.hotel_id = rt.hotel_id
 JOIN Room r ON rt.room_type_id = r.room_type_id
 JOIN HotelBooking hb ON r.room_id = hb.room_id
 JOIN Payment p ON hb.hotel_booking_id = p.hotel_booking_id
-GROUP BY h.hotel_name;
+GROUP BY h.hotel_name,hotel_location
+ORDER BY total_earned DESC;
 
 -- A.2. Low Inventory Alert (Rooms)
 SELECT hotel_name, room_type_name, total_capacity
@@ -357,7 +362,8 @@ FROM Airline a
 JOIN Flight f ON a.airline_id = f.airline_id
 JOIN FlightBooking fb ON f.flight_id = fb.flight_id
 JOIN Payment p ON fb.flight_booking_id = p.flight_booking_id
-GROUP BY a.airline_name;
+GROUP BY a.airline_name
+ORDER BY revenue_generated DESC;
 
 -- A.7. Monthly Revenue
 SELECT TO_CHAR(payment_date, 'YYYY-MM') AS month, SUM(amount) AS monthly_income
@@ -426,7 +432,7 @@ COMMIT;
 -- 6. Flight Payment
 BEGIN;
     INSERT INTO Payment (amount, payment_method, flight_booking_id) 
-    VALUES (400, 'Cash', (SELECT flight_booking_id FROM FlightBooking WHERE user_id = 6 ORDER BY 1 DESC LIMIT 1));
+    VALUES (50, 'Cash', (SELECT flight_booking_id FROM FlightBooking WHERE user_id = 3 ORDER BY 1 DESC LIMIT 1));
 COMMIT;
 
 -- 7. Update Flight Seat
@@ -443,9 +449,9 @@ SELECT * FROM HotelBooking WHERE user_id = 6;
 
 -- 9. Deleting Hotel Booking
 BEGIN;
-    UPDATE Room SET is_available = TRUE WHERE room_id = (SELECT room_id FROM HotelBooking WHERE hotel_booking_id = 6);
+    UPDATE Room SET is_available = TRUE WHERE room_id = (SELECT room_id FROM HotelBooking WHERE hotel_booking_id = 5);
     UPDATE RoomType SET total_capacity = total_capacity + 1 WHERE room_type_id = 1;
-    DELETE FROM HotelBooking WHERE hotel_booking_id = 6 AND status = 'booked';
+    DELETE FROM HotelBooking WHERE hotel_booking_id = 5 AND status = 'booked';
 COMMIT;
 
 -- 10. Deleteing Flight Booking
